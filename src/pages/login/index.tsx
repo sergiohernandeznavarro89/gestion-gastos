@@ -21,6 +21,7 @@ const Login = () => {
         if (response?.userEmail === data.email) {
             if (data.password === response.userPass) {
                 localStorage.setItem("user", JSON.stringify(response));
+
                 dispatch(UserActions.SetUser(response) as any);
             }
             else {
