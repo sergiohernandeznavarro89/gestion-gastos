@@ -3,7 +3,6 @@ import { styled } from 'lib/stitches.config';
 
 export const LoginBackground = styled('div', {
     height: '100vh',
-    backgroundColor: '$backgroundGray',
     width: '100%'
 });
 
