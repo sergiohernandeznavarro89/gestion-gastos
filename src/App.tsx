@@ -11,6 +11,7 @@ import PrimeReact from "primereact/api";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import 'react-toastify/dist/ReactToastify.css';
 import * as UserActions from "store/actions/UserActions";
+import AppLayout from 'Layout/AppLayout';
 
 
 function App() {
@@ -26,12 +27,12 @@ function App() {
     if (userStorage) {
       dispatch(UserActions.SetUser(JSON.parse(userStorage)) as any);
     }
-  }, []);
+  }, [user]);
 
   return (
     <>
+      {user.userId !== 0 && <AppLayout></AppLayout>}
       <Routes>
-        {/* <Route element={<AppLayout/>}> */}
         <Route path="/" element={user.userId !== 0 ? <Home /> : <Login />} />
       </Routes>
     </>
