@@ -7,13 +7,14 @@ import { NextUIProvider } from '@nextui-org/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import store from 'store';
 import { Provider } from 'react-redux';
+import { nextUiTheme } from './styles/nextUiTheme';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <Provider store={store}>
-    <NextUIProvider>
+    <NextUIProvider theme={nextUiTheme}>
       <React.StrictMode>
         <Router>
           <App />

@@ -1,6 +1,5 @@
-import { FC, useEffect, useState } from 'react'
-import { StyledDiv } from './styled';
-import { useSelector } from 'react-redux';
+import { FC } from 'react'
+import { Text } from '@nextui-org/react'
 
 interface Props {
 
@@ -9,7 +8,7 @@ interface Props {
 const Home: FC<Props> = (props: Props) => {
     return (
         <>
-            <StyledDiv>Home page</StyledDiv>
+            <Text>HOME PAGE</Text>
         </>
     )
 }
