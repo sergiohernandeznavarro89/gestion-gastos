@@ -71,7 +71,7 @@ const Home: FC<Props> = (props: Props) => {
                             gap: 1,
                             py: 1,
                             overflow: 'auto',
-                            width: 343,
+                            width: '100%',
                             scrollSnapType: 'x mandatory',
                             '& > *': {
                                 scrollSnapAlign: 'center',
@@ -82,7 +82,7 @@ const Home: FC<Props> = (props: Props) => {
                         {mock.map((item) => (
                             <Card
                                 className='p-2'
-                                style={{ minWidth: '130px' }}
+                                style={{ minWidth: '130px', maxWidth: '200px' }}
                                 key={item.accountName}
                                 variant="bordered"
                             >
@@ -90,10 +90,10 @@ const Home: FC<Props> = (props: Props) => {
                                     <Text h4 color='primary' >{item.accountName}</Text>
                                     <Text h5 color={item.ammount > 0 ? 'green' : 'red'}>{item.ammount} €</Text>
                                     <div className='flex flex-row justify-content-between'>
-                                        <Button aria-label="Like" size='sm' variant="outlined" color="success">
+                                        <Button aria-label="ingreso" size='sm' variant="outlined" color="success">
                                             <ArrowCircleDownIcon />
                                         </Button>
-                                        <Button aria-label="Like" size='sm' variant="outlined" color="danger">
+                                        <Button aria-label="pago" size='sm' variant="outlined" color="danger">
                                             <ArrowCircleUpIcon />
                                         </Button>
                                     </div>
