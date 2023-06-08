@@ -12,12 +12,14 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import 'react-toastify/dist/ReactToastify.css';
 import * as UserActions from "store/actions/UserActions";
 import AppLayout from 'Layout/AppLayout';
+import Account from 'pages/account';
 
 
 function App() {
 
   PrimeReact.ripple = true;
   const user = useSelector((state: any) => state.userState);
+  const menu = useSelector((state: any) => state.menuState);
 
   const dispatch = useDispatch();
 
@@ -34,6 +36,7 @@ function App() {
       {user.userId !== 0 && <AppLayout></AppLayout>}
       <Routes>
         <Route path="/" element={user.userId !== 0 ? <Home /> : <Login />} />
+        <Route path="/cuentas" element={<Account />} />
       </Routes>
     </>
   );

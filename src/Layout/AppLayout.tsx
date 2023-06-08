@@ -2,21 +2,40 @@ import { Avatar, Dropdown, Link, Navbar, Text } from '@nextui-org/react'
 import Layout from 'Layout/Layout'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
+import { redirect } from 'react-router';
 import * as UserActions from "store/actions/UserActions";
 
 const AppLayout = () => {
 
     const user = useSelector((state: any) => state.userState);
+    const menu = useSelector((state: any) => state.menuState);
+
     const dispatch = useDispatch();
 
-    const collapseItems = [
-        "Home",
-        "Accounts",
-        "Payments",
+    const menuItems = [
+        {
+            name: "Home",
+            path: "/",
+            idx: 0
+        },
+        {
+            name: "Cuentas",
+            path: "/cuentas",
+            idx: 1
+        },
+        {
+            name: "Pagos/Ingresos",
+            path: "/",
+            idx: 2
+        },
+        {
+            name: "Categorias",
+            path: "/",
+            idx: 3
+        },
     ];
 
     const logoutClick = () => {
-        debugger;
         dispatch(UserActions.SetUser({
             userName: '',
             userEmail: '',
@@ -45,8 +64,8 @@ const AppLayout = () => {
                     hideIn="xs"
                     variant="highlight"
                 >
-                    <Navbar.Link href="#">Home</Navbar.Link>
-                    <Navbar.Link isActive href="#">Accounts</Navbar.Link>
+                    <Navbar.Link onClick={() => redirect("/")}>Home</Navbar.Link>
+                    <Navbar.Link onClick={() => redirect("/cuentas")}>Accounts</Navbar.Link>
                     <Navbar.Link href="#">Payments</Navbar.Link>
                 </Navbar.Content>
                 <Navbar.Content
@@ -87,20 +106,20 @@ const AppLayout = () => {
                     </Dropdown>
                 </Navbar.Content>
                 <Navbar.Collapse disableAnimation>
-                    {collapseItems.map((item, index) => (
+                    {menuItems.map((item, index) => (
                         <Navbar.CollapseItem
-                            key={item}
+                            key={`${item.idx}-${item.name}`}
                             activeColor="primary"
-                            isActive={index === 2}
+                            isActive={index === menu.menuId}
                         >
                             <Link
                                 color="inherit"
                                 css={{
                                     minWidth: "100%",
                                 }}
-                                href="#"
+                                href={item.path}
                             >
-                                {item}
+                                {item.name}
                             </Link>
                         </Navbar.CollapseItem>
                     ))}
