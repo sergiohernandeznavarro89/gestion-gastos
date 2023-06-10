@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { LoginBackground, LoginCard, ValidationSpan } from './styled'
 import { Button, Card, Input, Text } from '@nextui-org/react'
 import { useForm } from 'react-hook-form';
-import { getUserByEmail } from 'services/user/UserService';
+import { GetUserByEmail } from 'services/user/UserService';
 import { ToastContainer, toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import * as UserActions from "store/actions/UserActions";
@@ -16,7 +16,7 @@ const Login = () => {
     const displayToastError = (message: string) => toast.error(message);
 
     const onSubmit = async (data: any) => {
-        const response = await getUserByEmail(data.email);
+        const response = await GetUserByEmail(data.email);
 
         if (response?.userEmail === data.email) {
             if (data.password === response.userPass) {

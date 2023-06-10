@@ -64,9 +64,7 @@ const AppLayout = () => {
                     hideIn="xs"
                     variant="highlight"
                 >
-                    <Navbar.Link onClick={() => redirect("/")}>Home</Navbar.Link>
-                    <Navbar.Link onClick={() => redirect("/cuentas")}>Accounts</Navbar.Link>
-                    <Navbar.Link href="#">Payments</Navbar.Link>
+                    {menuItems.map(x => (<Navbar.Link key={`menuDesktop-${x.idx}`} href={x.path}>{x.name}</Navbar.Link>))}
                 </Navbar.Content>
                 <Navbar.Content
                     css={{

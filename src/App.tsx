@@ -1,7 +1,5 @@
 import { useEffect } from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { Button } from '@nextui-org/react';
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/home';
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,7 +33,7 @@ function App() {
     <>
       {user.userId !== 0 && <AppLayout></AppLayout>}
       <Routes>
-        <Route path="/" element={user.userId !== 0 ? <Home /> : <Login />} />
+        <Route path="/" element={user.userId !== 0 ? <Home userId={user.userId} /> : <Login />} />
         <Route path="/cuentas" element={<Account />} />
       </Routes>
     </>
