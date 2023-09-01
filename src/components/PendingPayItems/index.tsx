@@ -59,7 +59,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems }) => {
                         <Text h5 className='m-0' color='primary' >Pagos Pendientes</Text>
                     </div>
                     <div style={{height:'100%', overflow:'hidden'}}>
-                    <ScrollPanel style={{ width: '100%', height: '300px' }}>
+                    <ScrollPanel style={{ width: '100%', height: '400px' }}>
                         <div className='flex flex-column gap-2'>
                             {pendingPayItems.map(x => (
                                 <Card
