@@ -2,7 +2,7 @@ import axios from "axios";
 import { AccountResponse } from "models/account/AccountResponse";
 import { AddAccountCommand } from "models/account/AddAccountCommand";
 
-const API = "https://sergiohn89.somee.com";
+const API = "http://localhost";
 
 export const GetAccountsByUser = async (userId: number): Promise<AccountResponse[]> => {
     const response = await axios.get<AccountResponse[]>(`${API}/api/Account/GetAccountsByUser?userId=${userId}`);
