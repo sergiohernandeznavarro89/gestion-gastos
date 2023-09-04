@@ -106,7 +106,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                 >
                                                      <div className='flex justify-content-between'>
                                                         <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
-                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`}</Text>
+                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 2}-${new Date().getFullYear()}`}</Text>
                                                     </div>
                                                     <div className='flex gap-2 justify-content-center align-items-center'>
                                                         <div className='flex flex-column w-12'>
@@ -166,7 +166,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                 >
                                                      <div className='flex justify-content-between'>
                                                         <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
-                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`}</Text>
+                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 2}-${new Date().getFullYear()}`}</Text>
                                                     </div>
                                                     <div className='flex gap-2 justify-content-center align-items-center'>                                                        
                                                         <div className='flex flex-column w-12'>                                                          
