@@ -47,8 +47,8 @@ const AppLayout = () => {
 
     return (
         <Layout>
-            <Navbar isBordered variant="sticky" style={{position:'fixed'}}>
-                <Navbar.Toggle showIn="xs" />
+            <Navbar variant="sticky" style={{position:'fixed', background:'white'}}>
+                <Navbar.Toggle showIn="xs"/>
                 <Navbar.Brand
                     css={{
                         "@xs": {
