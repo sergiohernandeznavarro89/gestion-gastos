@@ -56,7 +56,7 @@ const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
             <div className='flex flex-column m-2'>
                 <div className='flex flex-column gap-1'>
                     <div className='flex flex-row align-items-center gap-1'>
-                        <Text h5 className='m-0' color='primary' >Cuentas</Text>
+                        <Text h4 className='m-0' color='primary' >Cuentas</Text>
                         <Button icon={<AddIcon />} className='p-0 pt-1' style={{ height: 'fit-content' }} rounded text onClick={() => setShowDialogNewAccount(true)} />
                     </div>
                 </div>
