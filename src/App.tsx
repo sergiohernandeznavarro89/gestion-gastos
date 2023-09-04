@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import * as UserActions from "store/actions/UserActions";
 import AppLayout from 'Layout/AppLayout';
 import Account from 'pages/account';
+import Category from 'pages/category';
 
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
       <Routes>
         <Route path="/" element={user.userId !== 0 ? <Home userId={user.userId} /> : <Login />} />
         <Route path="/cuentas" element={<Account />} />
+        <Route path="/categorias" element={<Category userId={user.userId}/>} />
       </Routes>
     </>
   );
