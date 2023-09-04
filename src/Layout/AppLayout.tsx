@@ -30,7 +30,7 @@ const AppLayout = () => {
         },
         {
             name: "Categorias",
-            path: "/",
+            path: "/categorias",
             idx: 3
         },
     ];
