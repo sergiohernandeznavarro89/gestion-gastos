@@ -4,12 +4,13 @@ import { useDispatch } from 'react-redux';
 import * as MenuActions from "store/actions/MenuActions";
 
 import { GetAccountsByUser } from 'services/account/AccountService';
+import { GetPendingPayItems } from 'services/item/ItemService';
+import { GetNextMonthPendingPayItems } from 'services/item/ItemService';
 
 import { AccountResponse } from 'models/account/AccountResponse';
+import { PendingPayItemsResponse } from 'models/item/PendingPayItemResponse';
 
 import AccountSlider from 'components/AccountSlider';
-import { GetPendingPayItems } from 'services/item/ItemService';
-import { PendingPayItemsResponse } from 'models/item/PendingPayItemResponse';
 import PendingPayItems from 'components/PendingPayItems';
 
 interface Props {
@@ -22,6 +23,7 @@ const Home: FC<Props> = ({ userId }) => {
     const [accounts, setAccounts] = useState<AccountResponse[]>([]);
     const [refresh, setRefresh] = useState<boolean>(false);
     const [pendingPayItems, setPendingPayItems] = useState<PendingPayItemsResponse[]>([]);
+    const [pendingPayItemsNextMonth, setPendingPayItemsNextMonth] = useState<PendingPayItemsResponse[]>([]);
 
     useEffect(() => {
         dispatch(MenuActions.SetMenu({
@@ -34,13 +36,16 @@ const Home: FC<Props> = ({ userId }) => {
             (async () => {
                 const [
                     accountsResponse,
-                    pendingPayRespnose
+                    pendingPayRespnose,
+                    pendingPayNextMonthResponse
                 ] = await Promise.all([
                     GetAccountsByUser(userId),
-                    GetPendingPayItems(userId)
+                    GetPendingPayItems(userId),
+                    GetNextMonthPendingPayItems(userId),
                 ]);
                 setAccounts(accountsResponse);
                 setPendingPayItems(pendingPayRespnose);
+                setPendingPayItemsNextMonth(pendingPayNextMonthResponse);
             })();
         }
     }, [userId, refresh]);
@@ -49,7 +54,11 @@ const Home: FC<Props> = ({ userId }) => {
         <>
             <div className='flex flex-column w-12' style={{marginTop:'80px'}}>
                 <AccountSlider accounts={accounts} refresh={() => setRefresh(!refresh)} />
-                <PendingPayItems refresh={() => setRefresh(!refresh)} pendingPayItems={pendingPayItems}/>
+                <PendingPayItems 
+                    refresh={() => setRefresh(!refresh)} 
+                    pendingPayItems={pendingPayItems}
+                    pendingPayItemsNextMonth={pendingPayItemsNextMonth}
+                />
             </div>
         </>
     )

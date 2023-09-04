@@ -9,3 +9,8 @@ export const GetPendingPayItems = async (userId: number): Promise<PendingPayItem
     const response = await axios.get<PendingPayItemsResponse[]>(`${API}/api/Item/GetPendingPayItems?userId=${userId}`);
     return response.data;
 }
+
+export const GetNextMonthPendingPayItems = async (userId: number): Promise<PendingPayItemsResponse[]> => {
+    const response = await axios.get<PendingPayItemsResponse[]>(`${API}/api/Item/GetNextMonthPendingPayItems?userId=${userId}`);
+    return response.data;
+}
