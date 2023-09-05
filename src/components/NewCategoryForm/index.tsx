@@ -63,7 +63,7 @@ const NewCategoryForm: FC<Props> = ({ cancelClick, displayToast }) => {
                 </div>
 
                 <div className='flex justify-content-end gap-2'>
-                    <Button label="Cancelar" onClick={cancelClick} severity='danger' raised text size='small' />
+                    <Button label="Cancelar" type='button' onClick={cancelClick} severity='danger' raised text size='small' />
                     <Button label="Guardar" severity='info' raised size='small' />
                 </div>
             </form>
