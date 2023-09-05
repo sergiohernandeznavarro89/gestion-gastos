@@ -19,15 +19,18 @@ import { SubCategoryResponse } from 'models/subCategory/SubCategoryResponse';
 import { GetCategoriesByUser } from 'services/category/CategoryService';
 import { GetSubCategoriesByUser } from 'services/subCategory/SubCategoryService';
 import { AccountResponse } from 'models/account/AccountResponse';
+import { ItemTypeEnum } from 'enums/ItemTypeEnum';
+import { AddItem } from 'services/item/ItemService';
 
 interface Props {
     cancelClick: () => void;
     displayToast: (message: string, severity: string) => void;
     accounts: AccountResponse[];
     refresh: () => void;
+    itemType: number | undefined;
 };
 
-const NewPaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refresh }) => {
+const NewPaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refresh, itemType }) => {
     const user = useSelector((state: any) => state.userState);
     const [periodTypeId, setPeriodTypeId] = useState<number>(PeriodTypeEnum.Exporadico);
     const [ammountTypeId, setAmmountTypeId] = useState<number>(AmmountTypeEnum.Fijo);
@@ -72,9 +75,31 @@ const NewPaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refres
         reset
     } = useForm({ defaultValues });
     
-    const onSubmit = async (data: any) => {
-        const postData = { ...data, ...{ userId: user.userId } };
-        const response = await AddAccount(postData);
+    const formatPostRequest = (data: any) => {
+        const request = {            
+            itemName: data.itemName,
+            itemDesc: data.itemDesc,
+            ammount: data.ammount || 0,
+            periodity: data.periodity,
+            startDate: data.startDate?.toISOString() || new Date().toISOString(),
+            endDate: data.endDate?.toISOString() || new Date().toISOString(),
+            cancelled: false,
+            categoryId: data.categoryId,
+            subCategoryId: data.subCategoryId,
+            itemTypeId: itemType || ItemTypeEnum.Gasto,
+            ammountTypeId: periodTypeId === PeriodTypeEnum.Exporadico ? AmmountTypeEnum.Fijo : ammountTypeId,
+            periodTypeId: periodTypeId,
+            userId: user.userId,
+            accountId: data.accountId
+        }
+
+        return request;
+    }
+
+    const onSubmit = async (data: any) => {        
+        const requestCommand = formatPostRequest(data);
+        debugger;
+        const response = await AddItem(requestCommand);
 
         if (response?.success) {
             cancelClick();
@@ -136,16 +161,14 @@ const NewPaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refres
                 <div className='flex flex-column gap-1'>
                     <Controller
                         name="itemDesc"
-                        control={control}
-                        rules={{ required: 'Descripción es requerido' }}
+                        control={control}                        
                         render={({ field, fieldState }) => (
                             <>
                                 <label htmlFor={field.name} className={classNames({ 'p-error': errors.itemDesc })}></label>
                                 <span className="p-float-label">
-                                    <InputText id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.target.value)} />
+                                    <InputText id={field.name} value={field.value} className={`p-inputtext-sm w-full`} onChange={(e) => field.onChange(e.target.value)} />
                                     <label htmlFor={field.name}>Descripción</label>
-                                </span>
-                                {errors.itemDesc && <small className="p-error">{errors.itemDesc.message}</small>}
+                                </span>                                
                             </>
                         )}
                     />
