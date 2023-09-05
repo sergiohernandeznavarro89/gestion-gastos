@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { Text, Card } from '@nextui-org/react';
 
@@ -10,6 +10,12 @@ import { ScrollPanel } from 'primereact/scrollpanel';
 import { TabView, TabPanel } from 'primereact/tabview';
 
 import { AddItemPayment } from 'services/itemPayment/ItemPaymentService';
+import { InputNumber } from 'primereact/inputnumber';
+import { AmmountTypeEnum } from 'enums/AmmountTypeEnum';
+import { ItemPaymentResponse } from '../../models/itemPayment/ItemPaymentResponse';
+import { ItemTypeEnum } from 'enums/ItemTypeEnum';
+import ArrowDownIcon from '@mui/icons-material/ArrowCircleDownOutlined';
+import ArrowUpIcon from '@mui/icons-material/ArrowCircleUpOutlined';
 
 interface Props {    
     refresh: () => void;
@@ -18,6 +24,14 @@ interface Props {
 };
 
 const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsNextMonth }) => {    
+
+    const [pendingPayItemsAux, setPendingPayItemsAux] = useState<PendingPayItemsResponse[]>([]);
+
+    useEffect(() => {
+        if(pendingPayItems)
+            setPendingPayItemsAux(pendingPayItems)      
+    }, [pendingPayItems])
+    
 
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
@@ -31,16 +45,30 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
         }
     }
 
-    const payButtonClick = async (itemId: number) => {        
-        var response = await AddItemPayment(itemId);
-        
-        if(response.success){
-            displayToast("Pago efectuado correctamente", 'success');
-            refresh();
+    const payButtonClick = async (itemId: number) => {                
+        const item = pendingPayItemsAux.find(x => x.itemId === itemId);
+        if(item){
+            var response = await AddItemPayment(itemId, item.ammount);
+            
+            if(response.success){
+                displayToast("Pago efectuado correctamente", 'success');
+                refresh();
+            }
+            else{
+                displayToast("Error al efectuar el pago", 'error');
+            }        
         }
-        else{
-            displayToast("Error al efectuar el pago", 'error');
-        }        
+    }
+
+    const changeAmmount = (ammount: number | null, itemId: number) => {
+        const newPendingPayItems = pendingPayItems.map(x => {
+            if(x.itemId === itemId){
+                return {...x, ...{ammount: ammount ? ammount : 0}}
+            }
+            return x;
+        })
+
+        setPendingPayItemsAux(newPendingPayItems);
     }
 
     return (
@@ -61,7 +89,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
             <div className='flex flex-column m-2'>
                 <div className='flex flex-column gap-3'>
                     <div className='flex flex-row align-items-center gap-1'>
-                        <Text h4 className='m-0' color='primary' >Pagos Pendientes</Text>
+                        <Text h4 className='m-0' color='primary' >Gastos/Ingresos Pendientes</Text>
                     </div>
                     {isMobile ?
                         <TabView>
@@ -69,23 +97,30 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                 <div style={{height:'100%', overflow:'hidden'}}>
                                     <ScrollPanel style={{ width: '100%', height: '400px' }}>
                                         <div className='flex flex-column gap-2'>
-                                            {pendingPayItems.map(x => (                                                
+                                            {pendingPayItemsAux.map(x => (                                                
                                                 <Card
                                                     className='p-2'
                                                     key={x.itemId}
                                                     variant="bordered"
                                                 >
                                                     <div className='flex justify-content-between'>
-                                                        <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
+                                                        <div className='flex gap-2 w-9'>
+                                                            {x.itemTypeId === ItemTypeEnum.Gasto ? <ArrowDownIcon style={{color:'red'}}/> : <ArrowUpIcon style={{color:'green'}}/>}
+                                                            <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
+                                                        </div>
                                                         <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`}</Text>
                                                     </div>
                                                     <div className='flex gap-2 justify-content-between align-items-center'>
                                                         <div className='flex flex-column'>                                                            
                                                             <Text h6 className='m-0' >{x.itemDesc}</Text>
-                                                            <Text h5 className='mt-2' color={'red'}>{x.ammount} €</Text>
+                                                            {x.ammountTypeId !== AmmountTypeEnum.Variable ? 
+                                                                <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammount} €</Text>
+                                                                : <InputNumber suffix=' €' className='p-inputtext-sm' value={x.ammount} onChange={(e) => changeAmmount(e.value, x.itemId)}/>
+                                                            }
+
                                                         </div>
                                                         <div className='flex' style={{height:'fit-content'}}>
-                                                            <Button label="Pagar" rounded onClick={() => payButtonClick(x.itemId)}/>
+                                                            <Button label={x.itemTypeId === ItemTypeEnum.Gasto ? "Pagar" : "Cobrar"} rounded onClick={() => payButtonClick(x.itemId)}/>
                                                         </div>
                                                     </div>
                                                 </Card>                            
@@ -105,13 +140,15 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                     variant="bordered"
                                                 >
                                                      <div className='flex justify-content-between'>
-                                                        <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
-                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 2}-${new Date().getFullYear()}`}</Text>
+                                                     <div className='flex gap-2'>
+                                                            {x.itemTypeId === ItemTypeEnum.Gasto ? <ArrowDownIcon style={{color:'red'}}/> : <ArrowUpIcon style={{color:'green'}}/>}
+                                                            <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
+                                                        </div>                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 2}-${new Date().getFullYear()}`}</Text>
                                                     </div>
                                                     <div className='flex gap-2 justify-content-center align-items-center'>
                                                         <div className='flex flex-column w-12'>
                                                             <Text h6 className='m-0' >{x.itemDesc}</Text>
-                                                            <Text h5 className='mt-2' color={'red'}>{x.ammount} €</Text>
+                                                            <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammount} €</Text>
                                                         </div>                                                            
                                                     </div>
                                                 </Card>                            
@@ -128,23 +165,28 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                 <div style={{height:'100%', overflow:'hidden'}}>
                                     <ScrollPanel style={{ width: '100%', height: '400px' }}>
                                         <div className='flex flex-column gap-2'>
-                                            {pendingPayItems.map(x => (
+                                            {pendingPayItemsAux.map(x => (
                                                 <Card
                                                     className='p-2'
                                                     key={x.itemId}
                                                     variant="bordered"
                                                 >
                                                      <div className='flex justify-content-between'>
-                                                        <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
-                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`}</Text>
+                                                     <div className='flex gap-2'>
+                                                            {x.itemTypeId === ItemTypeEnum.Gasto ? <ArrowDownIcon style={{color:'red'}}/> : <ArrowUpIcon style={{color:'green'}}/>}
+                                                            <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
+                                                        </div>                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`}</Text>
                                                     </div>
                                                     <div className='flex gap-2 justify-content-between align-items-center'>
                                                         <div className='flex flex-column'>                                                            
                                                             <Text h6 className='m-0' >{x.itemDesc}</Text>
-                                                            <Text h5 className='mt-2' color={'red'}>{x.ammount} €</Text>
+                                                            {x.ammountTypeId !== AmmountTypeEnum.Variable ? 
+                                                                <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammount} €</Text>
+                                                                : <InputNumber suffix=' €' className='p-inputtext-sm' value={x.ammount} onChange={(e) => changeAmmount(e.value, x.itemId)}/>
+                                                            }                                                            
                                                         </div>
                                                         <div className='flex' style={{height:'fit-content'}}>
-                                                            <Button label="Pagar" rounded onClick={() => payButtonClick(x.itemId)}/>
+                                                            <Button label={x.itemTypeId === ItemTypeEnum.Gasto ? "Pagar" : "Cobrar"} rounded onClick={() => payButtonClick(x.itemId)}/>
                                                         </div>
                                                     </div>
                                                 </Card>                            
@@ -165,13 +207,15 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                     variant="bordered"
                                                 >
                                                      <div className='flex justify-content-between'>
-                                                        <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
-                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 2}-${new Date().getFullYear()}`}</Text>
+                                                     <div className='flex gap-2'>
+                                                            {x.itemTypeId === ItemTypeEnum.Gasto ? <ArrowDownIcon style={{color:'red'}}/> : <ArrowUpIcon style={{color:'green'}}/>}
+                                                            <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
+                                                        </div>                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 2}-${new Date().getFullYear()}`}</Text>
                                                     </div>
                                                     <div className='flex gap-2 justify-content-center align-items-center'>                                                        
                                                         <div className='flex flex-column w-12'>                                                          
                                                             <Text h6 className='m-0' >{x.itemDesc}</Text>
-                                                            <Text h5 className='mt-2' color={'red'}>{x.ammount} €</Text>
+                                                            <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammount} €</Text>
                                                         </div>                                                            
                                                     </div>
                                                 </Card>                            
