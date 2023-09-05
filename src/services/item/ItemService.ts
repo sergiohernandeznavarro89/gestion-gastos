@@ -2,7 +2,7 @@ import axios from "axios";
 import { AddItemCommand } from "models/item/AddItemCommand";
 import { PendingPayItemsResponse } from "models/item/PendingPayItemResponse";
 
-const API = "https://localhost:7061";
+const API = "https://sergiohn89.bsite.net";
 
 export const GetPendingPayItems = async (userId: number): Promise<PendingPayItemsResponse[]> => {
     const response = await axios.get<PendingPayItemsResponse[]>(`${API}/api/Item/GetPendingPayItems?userId=${userId}`);
