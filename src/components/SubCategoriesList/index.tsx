@@ -1,14 +1,12 @@
 import { FC, useState } from 'react';
-import { Card } from '@nextui-org/react';
 import AddIcon from '@mui/icons-material/Add';
 import { Button } from 'primereact/button';
 import { SubCategoryResponse } from 'models/subCategory/SubCategoryResponse';
 import { CategoryResponse } from 'models/category/CategoryResponse';
 import { Text } from '@nextui-org/react';
-import Modal from '@mui/joy/Modal';
-import { ModalClose } from '@mui/joy';
-import { ButtonTag, StyledModalDialog } from './styled';
+import { ButtonTag } from './styled';
 import NewSubCategoryForm from 'components/NewSubCategoryForm';
+import { Dialog } from 'primereact/dialog';
 
 
 interface Props {
@@ -41,26 +39,9 @@ const SubCategoriesList: FC<Props> = ({ subCategoriesSelected, refresh, selected
                 </div>
             </div>
 
-            <Modal
-                open={showDialogNewSubCategory}
-                onClose={() => setShowDialogNewSubCategory(false)}
-            >
-                <StyledModalDialog
-                    aria-labelledby="basic-modal-dialog-title"
-                    aria-describedby="basic-modal-dialog-description"
-                    variant='outlined'
-                >
-                    <div className='flex flex-column gap-3'>
-                        <div className='flex flex-row justify-content-between'>
-                            <ModalClose className="pt-2" />
-                            <Text h4 color='primary'>Nueva Subcategoría de {selectedCategory?.categoryDesc}</Text>
-                        </div>
-                        <div>
-                            <NewSubCategoryForm cancelClick={() => setShowDialogNewSubCategory(false)} displayToast={displayToast} selectedCategory={selectedCategory} />
-                        </div>
-                    </div>
-                </StyledModalDialog>
-            </Modal>
+            <Dialog header={`Nueva Subcategoría de ${selectedCategory?.categoryDesc}`} maximizable visible={showDialogNewSubCategory} style={{ width: '95%' }} onHide={() => setShowDialogNewSubCategory(false)}>
+                <NewSubCategoryForm cancelClick={() => setShowDialogNewSubCategory(false)} displayToast={displayToast} selectedCategory={selectedCategory} />            
+            </Dialog>              
         </>
     )
 }

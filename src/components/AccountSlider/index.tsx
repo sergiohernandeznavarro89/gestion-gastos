@@ -9,15 +9,13 @@ import { Card } from '@nextui-org/react';
 
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
-import { StyledModalDialog } from './styled';
 import AddIcon from '@mui/icons-material/Add';
-import Modal from '@mui/joy/Modal';
-import { ModalClose } from '@mui/joy';
 
 import { Button } from 'primereact/button';
 import NewAccountForm from 'components/NewAccountForm';
 import { ToastContainer, toast } from 'react-toastify';
 import NewPaymentForm from 'components/NewPaymentForm';
+import { Dialog } from 'primereact/dialog';
 
 
 interface Props {
@@ -104,47 +102,13 @@ const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
                 </div>
             </div>
 
-            <Modal
-                open={showDialogNewAccount}
-                onClose={() => setShowDialogNewAccount(false)}
-            >
-                <StyledModalDialog
-                    aria-labelledby="basic-modal-dialog-title"
-                    aria-describedby="basic-modal-dialog-description"
-                    variant='outlined'
-                >
-                    <div className='flex flex-column gap-3'>
-                        <div className='flex flex-row justify-content-between'>
-                            <ModalClose className="pt-2" />
-                            <Text h4 color='primary'>Nueva Cuenta</Text>
-                        </div>
-                        <div>
-                            <NewAccountForm cancelClick={() => setShowDialogNewAccount(false)} displayToast={displayToast} />
-                        </div>
-                    </div>
-                </StyledModalDialog>
-            </Modal>
+            <Dialog header="Nueva Cuenta" maximizable visible={showDialogNewAccount} style={{ width: '95%' }} onHide={() => setShowDialogNewAccount(false)}>
+                <NewAccountForm cancelClick={() => setShowDialogNewAccount(false)} displayToast={displayToast} />
+            </Dialog>              
 
-            <Modal
-                open={showDialogNewPayment}
-                onClose={() => setShowDialogNewPayment(false)}
-            >
-                <StyledModalDialog
-                    aria-labelledby="basic-modal-dialog-title"
-                    aria-describedby="basic-modal-dialog-description"
-                    variant='outlined'
-                >
-                    <div className='flex flex-column gap-3'>
-                        <div className='flex flex-row justify-content-between'>
-                            <ModalClose className="pt-2" />
-                            <Text h4 color='primary'>Nuevo Pago</Text>
-                        </div>
-                        <div>
-                            <NewPaymentForm cancelClick={() => setShowDialogNewPayment(false)} displayToast={displayToast}/>
-                        </div>
-                    </div>
-                </StyledModalDialog>
-            </Modal>
+            <Dialog header="Nuevo Pago" maximizable visible={showDialogNewPayment} style={{ width: '95%' }} onHide={() => setShowDialogNewPayment(false)}>
+                <NewPaymentForm cancelClick={() => setShowDialogNewPayment(false)} displayToast={displayToast} accounts={accounts} refresh={refresh}/>
+            </Dialog>            
         </>
     )
 }
