@@ -12,6 +12,8 @@ import { PendingPayItemsResponse } from 'models/item/PendingPayItemResponse';
 
 import AccountSlider from 'components/AccountSlider';
 import PendingPayItems from 'components/PendingPayItems';
+import { RingLoader } from 'react-spinners';
+import Spinner from 'components/Spinner';
 
 interface Props {
     userId: number
@@ -24,6 +26,7 @@ const Home: FC<Props> = ({ userId }) => {
     const [refresh, setRefresh] = useState<boolean>(false);
     const [pendingPayItems, setPendingPayItems] = useState<PendingPayItemsResponse[]>([]);
     const [pendingPayItemsNextMonth, setPendingPayItemsNextMonth] = useState<PendingPayItemsResponse[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         dispatch(MenuActions.SetMenu({
@@ -33,6 +36,7 @@ const Home: FC<Props> = ({ userId }) => {
 
     useEffect(() => {
         if (userId) {
+            setLoading(true);
             (async () => {
                 const [
                     accountsResponse,
@@ -46,6 +50,7 @@ const Home: FC<Props> = ({ userId }) => {
                 setAccounts(accountsResponse);
                 setPendingPayItems(pendingPayRespnose);
                 setPendingPayItemsNextMonth(pendingPayNextMonthResponse);
+                setLoading(false);
             })();
         }
     }, [userId, refresh]);
@@ -53,6 +58,7 @@ const Home: FC<Props> = ({ userId }) => {
     return (
         <>
             <div className='flex flex-column w-12' style={{marginTop:'80px'}}>
+                {loading && <Spinner loading={loading}/>}
                 <AccountSlider accounts={accounts} refresh={() => setRefresh(!refresh)} />
                 <PendingPayItems 
                     refresh={() => setRefresh(!refresh)} 
