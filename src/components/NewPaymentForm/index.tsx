@@ -98,7 +98,6 @@ const NewPaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refres
 
     const onSubmit = async (data: any) => {        
         const requestCommand = formatPostRequest(data);
-        debugger;
         const response = await AddItem(requestCommand);
 
         if (response?.success) {
