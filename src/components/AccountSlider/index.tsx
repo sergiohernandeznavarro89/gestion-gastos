@@ -17,6 +17,7 @@ import { ModalClose } from '@mui/joy';
 import { Button } from 'primereact/button';
 import NewAccountForm from 'components/NewAccountForm';
 import { ToastContainer, toast } from 'react-toastify';
+import NewPaymentForm from 'components/NewPaymentForm';
 
 
 interface Props {
@@ -27,6 +28,7 @@ interface Props {
 const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
 
     const [showDialogNewAccount, setShowDialogNewAccount] = useState<boolean>(false);
+    const [showDialogNewPayment, setShowDialogNewPayment] = useState<boolean>(false);
 
     const displayToast = (message: string, severity: string) => {
         if (severity === 'success') {
@@ -87,8 +89,8 @@ const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
                                     <Text h4 color='primary' >{item.accountName}</Text>
                                     <Text h5 color={item.ammount > 0 ? 'green' : 'red'}>{item.ammount} €</Text>
                                     <div className='flex flex-row justify-content-between'>
-                                        <Button icon={<ArrowCircleDownIcon />} severity='success' rounded text raised />
-                                        <Button icon={<ArrowCircleUpIcon />} severity='danger' rounded text raised />
+                                        <Button icon={<ArrowCircleDownIcon />} severity='success' rounded text raised/>
+                                        <Button icon={<ArrowCircleUpIcon />} severity='danger' rounded text raised onClick={() => setShowDialogNewPayment(true)}/>
                                     </div>
                                 </Box>
                             </Card>
@@ -118,6 +120,27 @@ const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
                         </div>
                         <div>
                             <NewAccountForm cancelClick={() => setShowDialogNewAccount(false)} displayToast={displayToast} />
+                        </div>
+                    </div>
+                </StyledModalDialog>
+            </Modal>
+
+            <Modal
+                open={showDialogNewPayment}
+                onClose={() => setShowDialogNewPayment(false)}
+            >
+                <StyledModalDialog
+                    aria-labelledby="basic-modal-dialog-title"
+                    aria-describedby="basic-modal-dialog-description"
+                    variant='outlined'
+                >
+                    <div className='flex flex-column gap-3'>
+                        <div className='flex flex-row justify-content-between'>
+                            <ModalClose className="pt-2" />
+                            <Text h4 color='primary'>Nuevo Pago</Text>
+                        </div>
+                        <div>
+                            <NewPaymentForm cancelClick={() => setShowDialogNewPayment(false)} displayToast={displayToast}/>
                         </div>
                     </div>
                 </StyledModalDialog>

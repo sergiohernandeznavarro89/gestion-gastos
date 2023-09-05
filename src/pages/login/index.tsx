@@ -1,16 +1,32 @@
 import { useEffect } from 'react';
 import { LoginBackground, LoginCard, ValidationSpan } from './styled'
 import { Button, Card, Input, Text } from '@nextui-org/react'
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { GetUserByEmail } from 'services/user/UserService';
 import { ToastContainer, toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import * as UserActions from "store/actions/UserActions";
 import { UserResponse } from 'models/user/UserResponse';
+import { classNames } from 'primereact/utils';
+import { InputText } from 'primereact/inputtext';
+import { Password } from 'primereact/password';
 
 const Login = () => {
 
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const defaultValues = {
+        email: '',
+        password: '',
+    };
+
+    const {
+        control,
+        formState: { errors },
+        handleSubmit,
+        getValues,
+        reset
+    } = useForm({ defaultValues });
+
+    // const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const dispatch = useDispatch();
 
     const displayToastError = (message: string) => toast.error(message);
@@ -51,26 +67,39 @@ const Login = () => {
                     <Text color="primary" size="$2xl" weight="bold">Login</Text>
                     <form className='flex flex-column gap-5 w-11' onSubmit={handleSubmit(onSubmit)}>
                         <div className='flex flex-column gap-1'>
-                            <Input
-                                clearable
-                                {...register("email", { required: true })}
-                                bordered
-                                labelPlaceholder="Email"
-                                color={!errors.email ? 'primary' : 'error'}
-                            />
-                            {errors.email && <ValidationSpan>field email is required</ValidationSpan>}
+                            <Controller
+                                name="email"
+                                control={control}
+                                rules={{ required: 'Email es requerido' }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <label htmlFor={field.name} className={classNames({ 'p-error': errors.email })}></label>
+                                        <span className="p-float-label">
+                                            <InputText id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.target.value)} />
+                                            <label htmlFor={field.name}>Email</label>
+                                        </span>
+                                        {errors.email && <small className="p-error">{errors.email.message}</small>}
+                                    </>
+                                )}
+                            />                                     
                         </div>
 
                         <div className='flex flex-column gap-1'>
-                            <Input
-                                type='password'
-                                clearable
-                                {...register("password", { required: true })}
-                                bordered
-                                labelPlaceholder="Password"
-                                color={!errors.password ? 'primary' : 'error'}
-                            />
-                            {errors.password && <ValidationSpan> field password is required</ValidationSpan>}
+                            <Controller
+                                name="password"
+                                control={control}
+                                rules={{ required: 'Password es requerido' }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <label htmlFor={field.name} className={classNames({ 'p-error': errors.password })}></label>
+                                        <span className="p-float-label">
+                                            <Password id={field.name}  className={`w-12 p-inputtext-sm ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.target.value)} feedback={false} toggleMask />
+                                            <label htmlFor={field.name}>Contraseña</label>
+                                        </span>
+                                        {errors.password && <small className="p-error">{errors.password.message}</small>}
+                                    </>
+                                )}
+                            />                                   
                         </div>
 
                         <div className='flex justify-content-center'>

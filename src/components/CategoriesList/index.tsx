@@ -7,7 +7,7 @@ import { CategoryResponse } from 'models/category/CategoryResponse';
 import { Text } from '@nextui-org/react';
 import Modal from '@mui/joy/Modal';
 import { ModalClose } from '@mui/joy';
-import { StyledModalDialog } from './styled';
+import { StyledModalDialog, ButtonTag, ButtonTagSelected } from './styled';
 import NewCategoryForm from 'components/NewCategoryForm';
 
 
@@ -34,26 +34,12 @@ const CategoriesList: FC<Props> = ({ categories, refresh, clickCategory, selecte
                 </div>
 
                 <div className='flex gap-2 mt-2 w-12 flex-wrap'>
-                    {categories.length > 0 ? categories.map((item) =>
-                        <Card
-                            isPressable 
-                            className='p-2'
-                            key={item.categoryDesc}
-                            variant="bordered"
-                            style={{width:'fit-content', cursor:'pointer', background: item === selectedCategory ? '#C7D2FE' : ''}}
-                            onPress={(e) => clickCategory(item)}
-                        >
-                            {item.categoryDesc}                                
-                        </Card>
+                    {categories.length > 0 ? categories.map((item) =>                    
+                        item === selectedCategory ? 
+                            <ButtonTagSelected label={item.categoryDesc} rounded onClick={(e) => clickCategory(item)}/> 
+                            : <ButtonTag label={item.categoryDesc} rounded onClick={(e) => clickCategory(item)}/>                        
                     ) : (
-                    <Card
-                            isPressable 
-                            className='p-2'                                    
-                            variant="bordered"
-                            style={{width:'fit-content', cursor:'pointer'}}
-                        >
-                            no existen categorías que mostrar
-                        </Card>
+                        <ButtonTag label="no existen categorías que mostrar" rounded />                    
                     )}
                 </div>
             </div>
