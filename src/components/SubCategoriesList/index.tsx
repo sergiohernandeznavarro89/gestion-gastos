@@ -7,7 +7,7 @@ import { CategoryResponse } from 'models/category/CategoryResponse';
 import { Text } from '@nextui-org/react';
 import Modal from '@mui/joy/Modal';
 import { ModalClose } from '@mui/joy';
-import { StyledModalDialog } from './styled';
+import { ButtonTag, StyledModalDialog } from './styled';
 import NewSubCategoryForm from 'components/NewSubCategoryForm';
 
 
@@ -34,23 +34,9 @@ const SubCategoriesList: FC<Props> = ({ subCategoriesSelected, refresh, selected
 
                 <div className='flex gap-2 mt-2 w-12 flex-wrap'>
                     {subCategoriesSelected.length > 0 ? subCategoriesSelected.map((item) =>
-                        <Card                                                                    
-                            className='p-2'
-                            key={item.subCategoryDesc}
-                            variant="bordered"
-                            style={{width:'fit-content', cursor:'pointer'}}
-                        >
-                            {item.subCategoryDesc}                                
-                        </Card>
-                    ) : (
-                        <Card
-                            isPressable 
-                            className='p-2'                                    
-                            variant="bordered"
-                            style={{width:'fit-content', cursor:'pointer'}}
-                        >
-                            no existen subcategorías que mostrar
-                        </Card>
+                        <ButtonTag label={item.subCategoryDesc} rounded />                                              
+                    ) : (                        
+                        <ButtonTag label='no existen subcategorías que mostrar' rounded />                            
                     )}
                 </div>
             </div>

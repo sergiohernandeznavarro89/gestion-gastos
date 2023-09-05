@@ -36,3 +36,7 @@
     transform: rotate(360deg);
   }
 }
+
+.p-password.w-12 > input{
+  width: 100%;
+}
