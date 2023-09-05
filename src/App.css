@@ -40,3 +40,7 @@
 .p-password.w-12 > input{
   width: 100%;
 }
+
+.p-dialog-header{
+  color: var(--blue-500) !important;
+}

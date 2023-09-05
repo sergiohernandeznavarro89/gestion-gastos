@@ -1,14 +1,12 @@
 import { FC, useState } from 'react';
-import { Card } from '@nextui-org/react';
 import AddIcon from '@mui/icons-material/Add';
 
 import { Button } from 'primereact/button';
 import { CategoryResponse } from 'models/category/CategoryResponse';
 import { Text } from '@nextui-org/react';
-import Modal from '@mui/joy/Modal';
-import { ModalClose } from '@mui/joy';
-import { StyledModalDialog, ButtonTag, ButtonTagSelected } from './styled';
+import { ButtonTag, ButtonTagSelected } from './styled';
 import NewCategoryForm from 'components/NewCategoryForm';
+import { Dialog } from 'primereact/dialog';
 
 
 interface Props {
@@ -44,26 +42,9 @@ const CategoriesList: FC<Props> = ({ categories, refresh, clickCategory, selecte
                 </div>
             </div>
 
-            <Modal
-                open={showDialogNewCategory}
-                onClose={() => setShowDialogNewCategory(false)}
-            >
-                <StyledModalDialog
-                    aria-labelledby="basic-modal-dialog-title"
-                    aria-describedby="basic-modal-dialog-description"
-                    variant='outlined'
-                >
-                    <div className='flex flex-column gap-3'>
-                        <div className='flex flex-row justify-content-between'>
-                            <ModalClose className="pt-2" />
-                            <Text h4 color='primary'>Nueva Categoría</Text>
-                        </div>
-                        <div>
-                            <NewCategoryForm cancelClick={() => setShowDialogNewCategory(false)} displayToast={displayToast} />
-                        </div>
-                    </div>
-                </StyledModalDialog>
-            </Modal>
+            <Dialog header="Nueva Categoría" maximizable visible={showDialogNewCategory} style={{ width: '95%' }} onHide={() => setShowDialogNewCategory(false)}>
+                <NewCategoryForm cancelClick={() => setShowDialogNewCategory(false)} displayToast={displayToast} />
+            </Dialog>                 
         </>
     )
 }
