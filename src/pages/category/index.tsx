@@ -10,6 +10,7 @@ import { SubCategoryResponse } from 'models/subCategory/SubCategoryResponse';
 import { GetSubCategoriesByUser } from 'services/subCategory/SubCategoryService';
 import CategoriesList from 'components/CategoriesList';
 import SubCategoriesList from 'components/SubCategoriesList';
+import Spinner from 'components/Spinner';
 
 
 interface Props {
@@ -24,6 +25,7 @@ const Category: FC<Props> = ({ userId }) => {
     const [subCategoriesSelected, setSubCategoriesSelected] = useState<SubCategoryResponse[]>([]);
     const [refresh, setRefresh] = useState<boolean>(false);
     const [selectedCategory, setSelectedCategory] = useState<CategoryResponse>();
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         dispatch(MenuActions.SetMenu({
@@ -33,6 +35,7 @@ const Category: FC<Props> = ({ userId }) => {
 
     useEffect(() => {
         if (userId) {
+            setLoading(true);
             (async () => {
                 const [
                     categoriesResponse,
@@ -50,6 +53,7 @@ const Category: FC<Props> = ({ userId }) => {
                     const currentSubCategories = subCategoriesResponse.filter(x => x.categoryId === categoriesResponse[0].categoryId);
                     setSubCategoriesSelected(currentSubCategories);
                 }
+                setLoading(false);
             })();
         }
     }, [userId, refresh]);
@@ -72,6 +76,8 @@ const Category: FC<Props> = ({ userId }) => {
 
     return (
         <>
+            {loading && <Spinner loading={loading}/>}
+
             <div className='flex flex-column w-12' style={{marginTop:'80px'}}>
                 <ToastContainer
                     position="top-right"
