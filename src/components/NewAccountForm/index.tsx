@@ -74,7 +74,7 @@ const NewAccountForm: FC<Props> = ({ cancelClick, displayToast }) => {
                             <>
                                 <label htmlFor={field.name} className={classNames({ 'p-error': errors.ammount })}></label>
                                 <span className="p-float-label">
-                                    <InputNumber id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.value)} mode="currency" currency="EUR" />
+                                    <InputNumber suffix=' €' id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.value)} />
                                     <label htmlFor={field.name}>Cantidad</label>
                                 </span>
                                 {errors.ammount && <small className="p-error">{errors.ammount.message}</small>}
