@@ -28,7 +28,7 @@ const AppLayout = () => {
         },
         {
             name: "Pagos/Ingresos",
-            path: "/",
+            path: "/paymentsandinvoices",
             idx: 2
         },
         {
