@@ -32,7 +32,7 @@ const SubCategoriesList: FC<Props> = ({ subCategoriesSelected, refresh, selected
 
                 <div className='flex gap-2 mt-2 w-12 flex-wrap'>
                     {subCategoriesSelected.length > 0 ? subCategoriesSelected.map((item) =>
-                        <ButtonTag label={item.subCategoryDesc} rounded />                                              
+                        <ButtonTag key={item.subCategoryId} label={item.subCategoryDesc} rounded />                                              
                     ) : (                        
                         <ButtonTag label='no existen subcategorías que mostrar' rounded />                            
                     )}
