@@ -183,7 +183,7 @@ const NewPaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refres
                                 <>
                                     <label htmlFor={field.name} className={classNames({ 'p-error': errors.ammount })}></label>
                                     <span className="p-float-label">
-                                        <InputNumber id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.value)} mode="currency" currency="EUR" />
+                                        <InputNumber suffix=' €' id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.value)} />
                                         <label htmlFor={field.name}>Cantidad</label>
                                     </span>
                                     {errors.ammount && <small className="p-error">{errors.ammount.message}</small>}
@@ -260,7 +260,7 @@ const NewPaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refres
                             <>
                                 <label htmlFor={field.name} className={classNames({ 'p-error': errors.categoryId })}></label>
                                 <span className="p-float-label">
-                                    <Dropdown filter showClear value={field.value} onChange={(e) => {field.onChange(e.target.value); changeCategory()}} options={categoriesList} optionValue='categoryId' optionLabel="categoryDesc" className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+                                    <Dropdown showClear value={field.value} onChange={(e) => {field.onChange(e.target.value); changeCategory()}} options={categoriesList} optionValue='categoryId' optionLabel="categoryDesc" className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
                                     <label htmlFor={field.name}>Categoría</label>
                                 </span>
                                 {errors.categoryId && <small className="p-error">{errors.categoryId.message}</small>}
@@ -273,15 +273,13 @@ const NewPaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refres
                     <Controller
                         name="subCategoryId"
                         control={control}
-                        rules={{ required: 'Subcategoría es requerida' }}
                         render={({ field, fieldState }) => (
                             <>
-                                <label htmlFor={field.name} className={classNames({ 'p-error': errors.subCategoryId })}></label>
+                                <label htmlFor={field.name}></label>
                                 <span className="p-float-label">
-                                    <Dropdown filter showClear value={field.value} onChange={(e) => {field.onChange(e.target.value)}} options={subCategoriesFilterList} optionValue='subCategoryId' optionLabel="subCategoryDesc" className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+                                    <Dropdown showClear value={field.value} onChange={(e) => {field.onChange(e.target.value)}} options={subCategoriesFilterList} optionValue='subCategoryId' optionLabel="subCategoryDesc" className={`p-inputtext-sm w-full`} />
                                     <label htmlFor={field.name}>Subcategoría</label>
                                 </span>
-                                {errors.subCategoryId && <small className="p-error">{errors.subCategoryId.message}</small>}
                             </>
                         )}
                     />
@@ -296,7 +294,7 @@ const NewPaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refres
                             <>
                                 <label htmlFor={field.name} className={classNames({ 'p-error': errors.accountId })}></label>
                                 <span className="p-float-label">
-                                    <Dropdown filter showClear value={field.value} onChange={(e) => {field.onChange(e.target.value)}} options={accounts} optionValue='accountId' optionLabel="accountName" className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+                                    <Dropdown showClear value={field.value} onChange={(e) => {field.onChange(e.target.value)}} options={accounts} optionValue='accountId' optionLabel="accountName" className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
                                     <label htmlFor={field.name}>Cuenta</label>
                                 </span>
                                 {errors.accountId && <small className="p-error">{errors.accountId.message}</small>}

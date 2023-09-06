@@ -105,7 +105,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                 >
                                                     <div className='flex justify-content-between'>
                                                         <div className='flex gap-2 w-9'>
-                                                            {x.itemTypeId === ItemTypeEnum.Gasto ? <ArrowDownIcon style={{color:'red'}}/> : <ArrowUpIcon style={{color:'green'}}/>}
+                                                            {x.itemTypeId === ItemTypeEnum.Gasto ? <ArrowUpIcon style={{color:'red'}}/> : <ArrowDownIcon style={{color:'green'}}/>}
                                                             <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
                                                         </div>
                                                         <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`}</Text>
@@ -141,14 +141,15 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                 >
                                                      <div className='flex justify-content-between'>
                                                      <div className='flex gap-2'>
-                                                            {x.itemTypeId === ItemTypeEnum.Gasto ? <ArrowDownIcon style={{color:'red'}}/> : <ArrowUpIcon style={{color:'green'}}/>}
+                                                            {x.itemTypeId === ItemTypeEnum.Gasto ? <ArrowUpIcon style={{color:'red'}}/> : <ArrowDownIcon style={{color:'green'}}/>}
                                                             <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
-                                                        </div>                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 2}-${new Date().getFullYear()}`}</Text>
+                                                        </div>                                                        
+                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 2}-${new Date().getFullYear()}`}</Text>
                                                     </div>
                                                     <div className='flex gap-2 justify-content-center align-items-center'>
                                                         <div className='flex flex-column w-12'>
                                                             <Text h6 className='m-0' >{x.itemDesc}</Text>
-                                                            <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammount} €</Text>
+                                                            <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammountTypeId === AmmountTypeEnum.Variable ? 'Importe Variable' : x.ammount} €</Text>
                                                         </div>                                                            
                                                     </div>
                                                 </Card>                            
@@ -173,7 +174,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                 >
                                                      <div className='flex justify-content-between'>
                                                      <div className='flex gap-2'>
-                                                            {x.itemTypeId === ItemTypeEnum.Gasto ? <ArrowDownIcon style={{color:'red'}}/> : <ArrowUpIcon style={{color:'green'}}/>}
+                                                            {x.itemTypeId === ItemTypeEnum.Gasto ? <ArrowUpIcon style={{color:'red'}}/> : <ArrowDownIcon style={{color:'green'}}/>}
                                                             <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
                                                         </div>                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`}</Text>
                                                     </div>
@@ -208,14 +209,14 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                 >
                                                      <div className='flex justify-content-between'>
                                                      <div className='flex gap-2'>
-                                                            {x.itemTypeId === ItemTypeEnum.Gasto ? <ArrowDownIcon style={{color:'red'}}/> : <ArrowUpIcon style={{color:'green'}}/>}
+                                                            {x.itemTypeId === ItemTypeEnum.Gasto ? <ArrowUpIcon style={{color:'red'}}/> : <ArrowDownIcon style={{color:'green'}}/>}
                                                             <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
                                                         </div>                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 2}-${new Date().getFullYear()}`}</Text>
                                                     </div>
                                                     <div className='flex gap-2 justify-content-center align-items-center'>                                                        
                                                         <div className='flex flex-column w-12'>                                                          
                                                             <Text h6 className='m-0' >{x.itemDesc}</Text>
-                                                            <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammount} €</Text>
+                                                            <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammountTypeId === AmmountTypeEnum.Variable ? 'Importe Variable' : x.ammount} €</Text>
                                                         </div>                                                            
                                                     </div>
                                                 </Card>                            
