@@ -34,8 +34,8 @@ const CategoriesList: FC<Props> = ({ categories, refresh, clickCategory, selecte
                 <div className='flex gap-2 mt-2 w-12 flex-wrap'>
                     {categories.length > 0 ? categories.map((item) =>                    
                         item === selectedCategory ? 
-                            <ButtonTagSelected label={item.categoryDesc} rounded onClick={(e) => clickCategory(item)}/> 
-                            : <ButtonTag label={item.categoryDesc} rounded onClick={(e) => clickCategory(item)}/>                        
+                            <ButtonTagSelected key={item.categoryId} label={item.categoryDesc} rounded onClick={(e) => clickCategory(item)}/> 
+                            : <ButtonTag key={item.categoryId} label={item.categoryDesc} rounded onClick={(e) => clickCategory(item)}/>                        
                     ) : (
                         <ButtonTag label="no existen categorías que mostrar" rounded />                    
                     )}
