@@ -1,9 +1,8 @@
 import { Avatar, Dropdown, Link, Navbar, Text } from '@nextui-org/react'
 import Layout from 'Layout/Layout'
-import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { redirect } from 'react-router';
 import * as UserActions from "store/actions/UserActions";
+import * as MenuActions from "store/actions/MenuActions";
 
 const AppLayout = () => {
 
@@ -11,6 +10,10 @@ const AppLayout = () => {
     const menu = useSelector((state: any) => state.menuState);
 
     const dispatch = useDispatch();
+
+    const clickMenu = (idx: number) => {
+        dispatch(MenuActions.SetMenu({menuId: idx}) as any);
+    }
 
     const menuItems = [
         {
@@ -64,7 +67,7 @@ const AppLayout = () => {
                     hideIn="xs"
                     variant="highlight"
                 >
-                    {menuItems.map(x => (<Navbar.Link key={`menuDesktop-${x.idx}`} href={x.path}>{x.name}</Navbar.Link>))}
+                    {menuItems.map(x => (<Navbar.Link isActive={x.idx === menu.menuId} key={`menuDesktop-${x.idx}`} href={x.path}>{x.name}</Navbar.Link>))}
                 </Navbar.Content>
                 <Navbar.Content
                     css={{
@@ -116,6 +119,7 @@ const AppLayout = () => {
                                     minWidth: "100%",
                                 }}
                                 href={item.path}
+                                onClick={() => clickMenu(item.idx)}
                             >
                                 {item.name}
                             </Link>

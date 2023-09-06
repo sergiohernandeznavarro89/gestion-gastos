@@ -29,7 +29,7 @@ const Category: FC<Props> = ({ userId }) => {
 
     useEffect(() => {
         dispatch(MenuActions.SetMenu({
-            menuId: 0,
+            menuId: 3,
         }) as any);
     }, [])
 
