@@ -21,6 +21,8 @@ import { GetSubCategoriesByUser } from 'services/subCategory/SubCategoryService'
 import { AccountResponse } from 'models/account/AccountResponse';
 import { ItemTypeEnum } from 'enums/ItemTypeEnum';
 import { AddItem } from 'services/item/ItemService';
+import moment from 'moment'
+import 'moment/locale/es';
 
 interface Props {
     cancelClick: () => void;
@@ -81,8 +83,8 @@ const NewPaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refres
             itemDesc: data.itemDesc,
             ammount: data.ammount || 0,
             periodity: data.periodity,
-            startDate: data.startDate?.toISOString() || new Date().toISOString(),
-            endDate: data.endDate?.toISOString() || new Date().toISOString(),
+            startDate: moment(data.startDate).format('YYYY-MM-DD HH:mm:ss') || moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+            endDate: moment(data.endDate).format('YYYY-MM-DD HH:mm:ss') || moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             cancelled: false,
             categoryId: data.categoryId,
             subCategoryId: data.subCategoryId,
@@ -97,7 +99,7 @@ const NewPaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refres
     }
 
     const onSubmit = async (data: any) => {        
-        const requestCommand = formatPostRequest(data);
+        const requestCommand = formatPostRequest(data);        
         const response = await AddItem(requestCommand);
 
         if (response?.success) {

@@ -44,3 +44,7 @@
 .p-dialog-header{
   color: var(--blue-500) !important;
 }
+
+.p-scrollpanel .p-scrollpanel-bar{
+  background: var(--blue-500) !important;
+}

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { AddItemCommand } from "models/item/AddItemCommand";
+import { ItemResponse } from "models/item/ItemResponse";
 import { PendingPayItemsResponse } from "models/item/PendingPayItemResponse";
 
 const API = "https://sergiohn89.bsite.net";
@@ -11,6 +12,11 @@ export const GetPendingPayItems = async (userId: number): Promise<PendingPayItem
 
 export const GetNextMonthPendingPayItems = async (userId: number): Promise<PendingPayItemsResponse[]> => {
     const response = await axios.get<PendingPayItemsResponse[]>(`${API}/api/Item/GetNextMonthPendingPayItems?userId=${userId}`);
+    return response.data;
+}
+
+export const GetAllItems = async (userId: number): Promise<ItemResponse[]> => {
+    const response = await axios.get<ItemResponse[]>(`${API}/api/Item/GetAllItems?userId=${userId}`);
     return response.data;
 }
 
