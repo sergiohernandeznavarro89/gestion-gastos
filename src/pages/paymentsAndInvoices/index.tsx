@@ -170,7 +170,7 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
         return <div style={{height:'100%', overflow:'hidden'}}>
             <ScrollPanel style={{ width: '100%', height: `${isMobile ? '200px' : '400px'}` }}>
                 <div className='flex flex-column gap-2'>
-                    {itemsPaymentExporadicoList && Object.keys(itemsPaymentExporadicoList).map((monthKey) => (
+                    {itemsPaymentExporadicoList ? Object.keys(itemsPaymentExporadicoList).map((monthKey) => (
                         <div className='flex flex-column gap-2' key={monthKey}>
                             <Text h5 className='m-0' color='primary' >{monthKey}</Text>                                                                                                  
                             {itemsPaymentExporadicoList[monthKey].map((item: any, index: any) => (
@@ -192,7 +192,15 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                                 </Card>
                             ))}
                         </div>
-                    ))}                                            
+                    ))
+                : 
+                <Card
+                            className='p-2'
+                            variant="bordered"
+                        >
+                            No existen Pagos que mostrar
+                        </Card>
+                }                                            
                 </div>
             </ScrollPanel>
         </div>
@@ -202,7 +210,7 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
         return <div style={{height:'100%', overflow:'hidden'}}>
             <ScrollPanel style={{ width: '100%', height: `${isMobile ? '200px' : '400px'}` }}>
                 <div className='flex flex-column gap-2'>
-                    {itemsInvoiceExporadicoList && Object.keys(itemsInvoiceExporadicoList).map((monthKey) => (
+                    {itemsInvoiceExporadicoList ? Object.keys(itemsInvoiceExporadicoList).map((monthKey) => (
                         <div className='flex flex-column gap-2' key={monthKey}>
                             <Text h5 className='m-0' color='primary' >{monthKey}</Text>                                                                                                  
                             {itemsInvoiceExporadicoList[monthKey].map((item: any, index: any) => (
@@ -224,7 +232,15 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                                 </Card>
                             ))}
                         </div>
-                    ))}
+                    ))
+                :
+                <Card
+                            className='p-2'
+                            variant="bordered"
+                        >
+                            No existen Ingresos que mostrar
+                        </Card>
+                }
                 </div>
             </ScrollPanel>
         </div>
