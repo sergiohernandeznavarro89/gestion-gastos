@@ -6,3 +6,9 @@ export const ButtonTag = styled(Button, {
     color:'black !important',
     height:'40px'
 });
+
+export const ButtonTagSelected = styled(Button, {
+    background: 'var(--blue-100) !important',
+    color:'black !important',
+    height:'40px'
+});

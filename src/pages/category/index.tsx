@@ -22,9 +22,10 @@ const Category: FC<Props> = ({ userId }) => {
     const dispatch = useDispatch();
     const [categories, setCategories] = useState<CategoryResponse[]>([]);
     const [subCategories, setSubCategories] = useState<SubCategoryResponse[]>([]);
-    const [subCategoriesSelected, setSubCategoriesSelected] = useState<SubCategoryResponse[]>([]);
+    const [subCategoriesFiltered, setSubCategoriesFiltered] = useState<SubCategoryResponse[]>([]);
     const [refresh, setRefresh] = useState<boolean>(false);
     const [selectedCategory, setSelectedCategory] = useState<CategoryResponse>();
+    const [selectedSubCategory, setSelectedSubCategory] = useState<SubCategoryResponse>();
     const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
@@ -51,12 +52,19 @@ const Category: FC<Props> = ({ userId }) => {
                 if(categoriesResponse.length > 0){
                     setSelectedCategory(categoriesResponse[0]);
                     const currentSubCategories = subCategoriesResponse.filter(x => x.categoryId === categoriesResponse[0].categoryId);
-                    setSubCategoriesSelected(currentSubCategories);
-                }
+                    setSubCategoriesFiltered(currentSubCategories);
+                }                
                 setLoading(false);
             })();
         }
     }, [userId, refresh]);
+
+    useEffect(() => {
+        if(subCategoriesFiltered.length > 0){
+            setSelectedSubCategory(subCategoriesFiltered[0]);                    
+        }
+    }, [subCategoriesFiltered])
+    
 
     const displayToast = (message: string, severity: string) => {
         if (severity === 'success') {
@@ -71,7 +79,11 @@ const Category: FC<Props> = ({ userId }) => {
     const clickCategory = (category: CategoryResponse) => {
         setSelectedCategory(category);
         const currentSubCategories = subCategories.filter(x => x.categoryId === category.categoryId);
-        setSubCategoriesSelected(currentSubCategories);
+        setSubCategoriesFiltered(currentSubCategories);
+    }
+    
+    const clickSubCategory = (subCategory: SubCategoryResponse) => {
+        setSelectedSubCategory(subCategory);
     }
 
     return (
@@ -95,16 +107,16 @@ const Category: FC<Props> = ({ userId }) => {
                 <CategoriesList
                     categories={categories}
                     clickCategory={clickCategory}
-                    refresh={() => setRefresh(!refresh)} 
                     selectedCategory={selectedCategory}
                     displayToast={displayToast}
                 />
 
                 <SubCategoriesList
-                    subCategoriesSelected={subCategoriesSelected}
-                    refresh={() => setRefresh(!refresh)}
+                    subCategoriesList={subCategoriesFiltered}
+                    clickSubCategory={clickSubCategory}
                     selectedCategory={selectedCategory}
                     displayToast={displayToast}
+                    selectedSubCategory={selectedSubCategory}
                 />
 
             </div>                    
