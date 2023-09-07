@@ -1,6 +1,7 @@
 import axios from "axios";
 import { AddSubCategoryCommand } from "models/subCategory/AddSubCategoryCommand";
 import { SubCategoryResponse } from "models/subCategory/SubCategoryResponse";
+import { UpdateSubCategoryCommand } from "models/subCategory/UpdateSubCategoryCommand";
 
 const API = "https://sergiohn89.bsite.net";
 
@@ -12,6 +13,16 @@ export const GetSubCategoriesByUser = async (userId: number): Promise<SubCategor
 export const AddSubCategory = async (subCategory: AddSubCategoryCommand) => {
     const body = JSON.stringify(subCategory);
     const response = await axios.post(`${API}/api/SubCategory/AddSubCategory`, body, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
+}
+
+export const UpdateSubCategory = async (subCategory: UpdateSubCategoryCommand) => {
+    const body = JSON.stringify(subCategory);
+    const response = await axios.put(`${API}/api/SubCategory/UpdateSubCategory`, body, {
         headers: {
             'Content-Type': 'application/json'
         }

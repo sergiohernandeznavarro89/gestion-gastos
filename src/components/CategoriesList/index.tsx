@@ -1,33 +1,38 @@
 import { FC, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
-
 import { Button } from 'primereact/button';
 import { CategoryResponse } from 'models/category/CategoryResponse';
 import { Text } from '@nextui-org/react';
 import { ButtonTag, ButtonTagSelected } from './styled';
-import NewCategoryForm from 'components/NewCategoryForm';
 import { Dialog } from 'primereact/dialog';
-
+import EditIcon from '@mui/icons-material/CreateOutlined';
+import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import CategoryForm from 'components/CategoryForm';
 
 interface Props {
     categories: CategoryResponse[];
     clickCategory: (category: CategoryResponse) => void;
-    refresh: () => void;
     selectedCategory: CategoryResponse | undefined;
     displayToast: (message: string, severity: string) => void;
 };
 
-const CategoriesList: FC<Props> = ({ categories, refresh, clickCategory, selectedCategory, displayToast }) => {
+const CategoriesList: FC<Props> = ({ categories, clickCategory, selectedCategory, displayToast }) => {
 
-    const [showDialogNewCategory, setShowDialogNewCategory] = useState<boolean>(false);    
+    const [showDialogCategory, setShowDialogCategory] = useState<boolean>(false);    
+    const [categoryEdit, setCategoryEdit] = useState<CategoryResponse>();
 
     return (
         <>            
             <div className='flex flex-column m-2'>
                 <div className='flex flex-column gap-1'>
-                    <div className='flex flex-row align-items-center gap-1'>
+                    <div className='flex flex-row align-items-center gap-2'>
                         <Text h4 className='m-0' color='primary' >Categorías</Text>
-                        <Button icon={<AddIcon />} className='p-0 pt-1' style={{ height: 'fit-content' }} rounded text onClick={() => setShowDialogNewCategory(true)} />
+                        <div className='flex'>
+                            <Button icon={<AddIcon />} className='p-0 pt-1' style={{ height: 'fit-content', width:'2rem' }} rounded link onClick={() => setShowDialogCategory(true)} />
+                            <Button icon={<DeleteIcon />} className='p-0 pt-1' style={{ color:'red', height: 'fit-content', width:'2rem' }} rounded link />
+                            <Button icon={<EditIcon />} className='p-0 pt-1' style={{ height: 'fit-content', width:'2rem' }} rounded link onClick={() => {setShowDialogCategory(true); setCategoryEdit(selectedCategory)}} />
+
+                        </div>
                     </div>
                 </div>
 
@@ -42,8 +47,8 @@ const CategoriesList: FC<Props> = ({ categories, refresh, clickCategory, selecte
                 </div>
             </div>
 
-            <Dialog header="Nueva Categoría" maximizable visible={showDialogNewCategory} style={{ width: '95%' }} onHide={() => setShowDialogNewCategory(false)}>
-                <NewCategoryForm cancelClick={() => setShowDialogNewCategory(false)} displayToast={displayToast} />
+            <Dialog header={!categoryEdit ? "Nueva Categoría" : "Editar Categoría"} maximizable visible={showDialogCategory} style={{ width: '95%' }} onHide={() => {setShowDialogCategory(false); setCategoryEdit(undefined)}}>
+                <CategoryForm cancelClick={() => {setShowDialogCategory(false); setCategoryEdit(undefined)}} displayToast={displayToast} category={categoryEdit}/>
             </Dialog>                 
         </>
     )

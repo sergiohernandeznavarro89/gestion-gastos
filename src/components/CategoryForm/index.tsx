@@ -1,25 +1,26 @@
 import { Input } from '@nextui-org/react';
 import { ValidationSpan } from 'pages/login/styled';
 import { FC } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { Button } from 'primereact/button';
 import { useSelector } from 'react-redux';
-import { CategoryResponse } from 'models/category/CategoryResponse';
-import { AddSubCategory } from 'services/subCategory/SubCategoryService';
-import { classNames } from 'primereact/utils';
+import { AddCategory, UpdateCategory } from 'services/category/CategoryService';
 import { InputText } from 'primereact/inputtext';
+import { classNames } from 'primereact/utils';
+import { CategoryResponse } from 'models/category/CategoryResponse';
+import { ResponseBase } from 'models/shared/ResponseBase';
 
 interface Props {
     cancelClick: () => void;
     displayToast: (message: string, severity: string) => void;
-    selectedCategory: CategoryResponse | undefined;
+    category?: CategoryResponse;
 };
 
-const NewSubCategoryForm: FC<Props> = ({ cancelClick, displayToast, selectedCategory }) => {
+const CategoryForm: FC<Props> = ({ cancelClick, displayToast, category }) => {
     const user = useSelector((state: any) => state.userState);
-    
+
     const defaultValues = {
-        subcategoryDesc: '',
+        categoryDesc: category ? category.categoryDesc : '',
     };
 
     const {
@@ -29,10 +30,22 @@ const NewSubCategoryForm: FC<Props> = ({ cancelClick, displayToast, selectedCate
         getValues,
         reset
     } = useForm({ defaultValues });
-    
+
+    const request = async (data: any): Promise<ResponseBase> => {
+        if(!category){
+            const postData = { ...data, ...{ userId: user.userId } };
+            const response = await AddCategory(postData);
+            return response;
+        }
+        else{
+            const putData = { ...data, ...{ categoryId: category.categoryId } };
+            const response = await UpdateCategory(putData);
+            return response;
+        }
+    }
+
     const onSubmit = async (data: any) => {
-        const postData = { ...data, ...{ userId: user.userId, categoryId: selectedCategory?.categoryId } };
-        const response = await AddSubCategory(postData);
+        const response = await request(data);                
 
         if (response?.success) {
             cancelClick();
@@ -48,20 +61,20 @@ const NewSubCategoryForm: FC<Props> = ({ cancelClick, displayToast, selectedCate
             <form className='flex flex-column gap-5 w-12' onSubmit={handleSubmit(onSubmit)}>
                 <div className='flex flex-column gap-1'>
                     <Controller
-                        name="subcategoryDesc"
+                        name="categoryDesc"
                         control={control}
                         rules={{ required: 'Nombre es requerido' }}
                         render={({ field, fieldState }) => (
                             <>
-                                <label htmlFor={field.name} className={classNames({ 'p-error': errors.subcategoryDesc })}></label>
-                                <span className="p-float-label">
+                                <label htmlFor={field.name} className={classNames({ 'p-error': errors.categoryDesc })}></label>
+                                <span className="p-float-label mt-3">
                                     <InputText id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.target.value)} />
                                     <label htmlFor={field.name}>Nombre</label>
                                 </span>
-                                {errors.subcategoryDesc && <small className="p-error">{errors.subcategoryDesc.message}</small>}
+                                {errors.categoryDesc && <small className="p-error">{errors.categoryDesc.message}</small>}
                             </>
                         )}
-                    />                            
+                    />                           
                 </div>
 
                 <div className='flex justify-content-end gap-2'>
@@ -73,4 +86,4 @@ const NewSubCategoryForm: FC<Props> = ({ cancelClick, displayToast, selectedCate
     )
 }
 
-export default NewSubCategoryForm
+export default CategoryForm
