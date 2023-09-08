@@ -14,7 +14,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { Button } from 'primereact/button';
 import NewAccountForm from 'components/NewAccountForm';
 import { ToastContainer, toast } from 'react-toastify';
-import NewPaymentForm from 'components/NewPaymentForm';
+import PaymentForm from 'components/PaymentForm';
 import { Dialog } from 'primereact/dialog';
 import { ItemTypeEnum } from 'enums/ItemTypeEnum';
 
@@ -27,7 +27,7 @@ interface Props {
 const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
 
     const [showDialogNewAccount, setShowDialogNewAccount] = useState<boolean>(false);
-    const [showDialogNewPayment, setShowDialogNewPayment] = useState<boolean>(false);
+    const [showDialogPayment, setShowDialogPayment] = useState<boolean>(false);
     const [itemType, setItemType] = useState<number>();
 
     const displayToast = (message: string, severity: string) => {
@@ -89,8 +89,8 @@ const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
                                     <Text h4 color='primary' >{item.accountName}</Text>
                                     <Text h5 color={item.ammount > 0 ? 'green' : 'red'}>{item.ammount} €</Text>
                                     <div className='flex flex-row justify-content-between'>
-                                        <Button icon={<ArrowCircleDownIcon />} severity='success' rounded text raised onClick={() => {setShowDialogNewPayment(true); setItemType(ItemTypeEnum.Ingreso)}}/>
-                                        <Button icon={<ArrowCircleUpIcon />} severity='danger' rounded text raised onClick={() => {setShowDialogNewPayment(true); setItemType(ItemTypeEnum.Gasto)}}/>
+                                        <Button icon={<ArrowCircleDownIcon />} severity='success' rounded text raised onClick={() => {setShowDialogPayment(true); setItemType(ItemTypeEnum.Ingreso)}}/>
+                                        <Button icon={<ArrowCircleUpIcon />} severity='danger' rounded text raised onClick={() => {setShowDialogPayment(true); setItemType(ItemTypeEnum.Gasto)}}/>
                                     </div>
                                 </Box>
                             </Card>
@@ -108,8 +108,8 @@ const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
                 <NewAccountForm cancelClick={() => setShowDialogNewAccount(false)} displayToast={displayToast} />
             </Dialog>              
 
-            <Dialog header={itemType === ItemTypeEnum.Ingreso ? "Nuevo Ingreso" : "Nuevo Pago"} maximizable visible={showDialogNewPayment} style={{ width: '95%' }} onHide={() => setShowDialogNewPayment(false)}>
-                <NewPaymentForm itemType={itemType} cancelClick={() => setShowDialogNewPayment(false)} displayToast={displayToast} accounts={accounts} refresh={refresh}/>
+            <Dialog header={itemType === ItemTypeEnum.Ingreso ? "Nuevo Ingreso" : "Nuevo Pago"} maximizable visible={showDialogPayment} style={{ width: '95%' }} onHide={() => setShowDialogPayment(false)}>
+                <PaymentForm itemType={itemType} cancelClick={() => setShowDialogPayment(false)} displayToast={displayToast} accounts={accounts} refresh={refresh}/>
             </Dialog>            
         </>
     )
