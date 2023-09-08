@@ -3,11 +3,13 @@ import Layout from 'Layout/Layout'
 import { useDispatch, useSelector } from 'react-redux';
 import * as UserActions from "store/actions/UserActions";
 import * as MenuActions from "store/actions/MenuActions";
+import { useNavigate } from 'react-router-dom';
 
 const AppLayout = () => {
 
     const user = useSelector((state: any) => state.userState);
     const menu = useSelector((state: any) => state.menuState);
+    const navigate = useNavigate();
 
     const dispatch = useDispatch();
 
@@ -46,6 +48,7 @@ const AppLayout = () => {
             userId: 0,
         }) as any);
         localStorage.removeItem('user');
+        navigate('/');
     };
 
     return (
