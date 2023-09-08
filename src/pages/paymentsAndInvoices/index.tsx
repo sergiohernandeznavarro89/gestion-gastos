@@ -16,7 +16,12 @@ import { PeriodTypeEnum } from 'enums/PeriodTypeEnum';
 import { ScrollPanel } from 'primereact/scrollpanel';
 
 import _ from 'lodash';
+import PaymentsInvoicesRecurrentsList from 'components/PaymentsInvoicesRecurrentsList';
+import PaymentsInvoicesSporadicList from 'components/PaymentsInvoicesSporadicList';
 
+interface ItemsGroupedByMonthYear {
+    [key: string]: ItemResponse[];
+}
 interface Props {
     userId: number
 }
@@ -29,8 +34,8 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
     const [itemsList, setItemsList] = useState<ItemResponse[]>([])
     const [itemsPaymentRecurrenteList, setItemsPaymentRecurrenteList] = useState<ItemResponse[]>([])
     const [itemsInvoiceRecurrenteList, setItemsInvoiceRecurrenteList] = useState<ItemResponse[]>([])
-    const [itemsPaymentExporadicoList, setItemsPaymentExporadicoList] = useState<any>()
-    const [itemsInvoiceExporadicoList, setItemsInvoiceExporadicoList] = useState<any>()
+    const [itemsPaymentExporadicoList, setItemsPaymentExporadicoList] = useState<ItemsGroupedByMonthYear>()
+    const [itemsInvoiceExporadicoList, setItemsInvoiceExporadicoList] = useState<ItemsGroupedByMonthYear>()
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
     useEffect(() => {
@@ -54,6 +59,7 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                 return `${startDate.getMonth() + 1}-${startDate.getFullYear()}`;
             });
             setItemsPaymentExporadicoList(paymentsGroupedByMonthYear);
+            console.log({paymentsGroupedByMonthYear});
             
             const invoicesExporadicos = itemsList.filter(x => x.itemTypeId === ItemTypeEnum.Ingreso && x.periodTypeId === PeriodTypeEnum.Exporadico);
             const invoicesSortedItems = invoicesExporadicos.sort((a: any , b: any) => b.startDate - a.startDate);
@@ -62,7 +68,7 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                 return `${startDate.getMonth() + 1}-${startDate.getFullYear()}`;
             });
             setItemsInvoiceExporadicoList(invoicesGroupedByMonthYear);
-
+            console.log({invoicesGroupedByMonthYear});
         }
     }, [itemsList])
     
@@ -92,158 +98,6 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
         else {
             toast.error(message);
         }
-    }    
-
-    const getPaymentsRecurrentes = () => {
-        return <div style={{height:'100%', overflow:'hidden'}}>
-            <ScrollPanel style={{ width: '100%', height: `${isMobile ? '200px' : '400px'}` }}>
-                <div className='flex flex-column gap-2'>
-                    {itemsPaymentRecurrenteList.length > 0 ? 
-                        itemsPaymentRecurrenteList.map(x => <>
-                            <Card
-                                className='p-2'
-                                key={x.itemId}
-                                variant="bordered"
-                            >
-                                <div className='flex justify-content-between'>                                                
-                                    <Text h5 className='m-0' color='primary' >{x.itemName}</Text>                                                
-                                    <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date(x.startDate).getMonth() + 1}-${new Date(x.startDate).getFullYear()}`}</Text>
-                                </div>
-                                <div className='flex gap-2 justify-content-between align-items-center'>
-                                    <div className='flex flex-column'>                                                            
-                                        <Text h6 className='m-0' >{x.itemDesc}</Text>                                                    
-                                        <Text h5 className='mt-2' color='red'>{x.ammountTypeId !== AmmountTypeEnum.Variable ? `${x.ammount} €` : 'Pago Variable'}</Text>
-                                    </div>                                                
-                                </div>
-                            </Card>
-                        </>)
-                    : 
-                        <Card
-                            className='p-2'
-                            variant="bordered"
-                        >
-                            No existen Pagos que mostrar
-                        </Card>
-                    }
-                </div>
-            </ScrollPanel>
-        </div>
-    };
-
-    const getInvoicesRecurrentes = () => {
-        return <div style={{height:'100%', overflow:'hidden'}}>
-            <ScrollPanel style={{ width: '100%', height: `${isMobile ? '200px' : '400px'}` }}>
-                <div className='flex flex-column gap-2'>
-                    {itemsInvoiceRecurrenteList.length > 0 ? 
-                        itemsInvoiceRecurrenteList.map(x =>                                         
-                            <Card
-                                className='p-2'
-                                key={x.itemId}
-                                variant="bordered"
-                            >
-                                <div className='flex justify-content-between'>                                                
-                                    <Text h5 className='m-0' color='primary' >{x.itemName}</Text>                                                
-                                    <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date(x.startDate).getMonth() + 1}-${new Date(x.startDate).getFullYear()}`}</Text>
-                                </div>
-                                <div className='flex gap-2 justify-content-between align-items-center'>
-                                    <div className='flex flex-column'>                                                            
-                                        <Text h6 className='m-0' >{x.itemDesc}</Text>                                                    
-                                        <Text h5 className='mt-2' color='green'>{x.ammountTypeId !== AmmountTypeEnum.Variable ? `${x.ammount} €` : 'Ingreso Variable'}</Text>
-                                    </div>
-                                </div>
-                            </Card>
-                        )
-                        : 
-                        <Card
-                            className='p-2'
-                            variant="bordered"
-                        >
-                            No existen Ingresos que mostrar
-                        </Card>
-                    }
-                </div>
-            </ScrollPanel>
-        </div>
-    }
-
-    const getPaymentsExporadicos = () => {
-        return <div style={{height:'100%', overflow:'hidden'}}>
-            <ScrollPanel style={{ width: '100%', height: `${isMobile ? '200px' : '400px'}` }}>
-                <div className='flex flex-column gap-2'>
-                    {itemsPaymentExporadicoList && Object.keys(itemsPaymentExporadicoList)?.length > 0 ? Object.keys(itemsPaymentExporadicoList).map((monthKey) => (
-                        <div className='flex flex-column gap-2' key={monthKey}>
-                            <Text h5 className='m-0' color='primary' >{monthKey}</Text>                                                                                                  
-                            {itemsPaymentExporadicoList[monthKey].map((item: any, index: any) => (
-                                <Card
-                                    className='p-2'
-                                    key={item.itemId}
-                                    variant="bordered"
-                                >
-                                    <div className='flex justify-content-between'>                                                
-                                        <Text h5 className='m-0' color='primary' >{item.itemName}</Text>                                                
-                                        <Text h5 className='m-0' color='primary' >{`${new Date(item.startDate).getDate()}-${new Date(item.startDate).getMonth() + 1}-${new Date(item.startDate).getFullYear()}`}</Text>
-                                    </div>
-                                    <div className='flex gap-2 justify-content-between align-items-center'>
-                                        <div className='flex flex-column'>                                                            
-                                            <Text h6 className='m-0' >{item.itemDesc}</Text>                                                    
-                                            <Text h5 className='mt-2' color='red'>{item.ammountTypeId !== AmmountTypeEnum.Variable ? `${item.ammount} €` : 'Pago Variable'}</Text>
-                                        </div>                                                
-                                    </div>
-                                </Card>
-                            ))}
-                        </div>
-                    ))
-                    :
-                    <Card
-                        className='p-2'
-                        variant="bordered"
-                    >
-                        No existen Pagos que mostrar
-                    </Card>
-                    }                                            
-                </div>
-            </ScrollPanel>
-        </div>
-    }
-
-    const getInvoicesExporadicos = () => {
-        return <div style={{height:'100%', overflow:'hidden'}}>
-            <ScrollPanel style={{ width: '100%', height: `${isMobile ? '200px' : '400px'}` }}>
-                <div className='flex flex-column gap-2'>
-                    {itemsInvoiceExporadicoList && Object.keys(itemsInvoiceExporadicoList).length > 0 ? Object.keys(itemsInvoiceExporadicoList).map((monthKey) => (
-                        <div className='flex flex-column gap-2' key={monthKey}>
-                            <Text h5 className='m-0' color='primary' >{monthKey}</Text>                                                                                                  
-                            {itemsInvoiceExporadicoList[monthKey].map((item: any, index: any) => (
-                                <Card
-                                    className='p-2'
-                                    key={item.itemId}
-                                    variant="bordered"
-                                >
-                                    <div className='flex justify-content-between'>                                                
-                                        <Text h5 className='m-0' color='primary' >{item.itemName}</Text>                                                
-                                        <Text h5 className='m-0' color='primary' >{`${new Date(item.startDate).getDate()}-${new Date(item.startDate).getMonth() + 1}-${new Date(item.startDate).getFullYear()}`}</Text>
-                                    </div>
-                                    <div className='flex gap-2 justify-content-between align-items-center'>
-                                        <div className='flex flex-column'>                                                            
-                                            <Text h6 className='m-0' >{item.itemDesc}</Text>                                                    
-                                            <Text h5 className='mt-2' color='green'>{item.ammountTypeId !== AmmountTypeEnum.Variable ? `${item.ammount} €` : 'Pago Variable'}</Text>
-                                        </div>                                                
-                                    </div>
-                                </Card>
-                            ))}
-                        </div>
-                    ))
-                    :
-                    <Card
-                        className='p-2'
-                        variant="bordered"
-                    >
-                        No existen Ingresos que mostrar
-                    </Card>
-                    }
-                </div>
-            </ScrollPanel>
-        </div>
     }
 
     return (
@@ -269,21 +123,30 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                     {isMobile ?
                         <TabView>
                             <TabPanel header="Pagos">
-                                {getPaymentsRecurrentes()}
+                                <PaymentsInvoicesRecurrentsList
+                                    listType='payment'
+                                    itemsList={itemsPaymentRecurrenteList}
+                                />
                             </TabPanel>
                             <TabPanel header="Ingresos">
-                                {getInvoicesRecurrentes()}
+                                <PaymentsInvoicesRecurrentsList
+                                    listType='invoice'
+                                    itemsList={itemsInvoiceRecurrenteList}
+                                />
                             </TabPanel>
                         </TabView>                        
-                        :
+                    :
                         <div className='flex gap-2 w-12'>
                             <div className='w-6 flex flex-column gap-2'>
                                 <Text h5 className='m-0' color='primary' >Pagos</Text>
                                 <Card
                                     className='p-2'
                                     variant="bordered"
-                                >                                    
-                                    {getPaymentsRecurrentes()}
+                                >
+                                    <PaymentsInvoicesRecurrentsList
+                                        listType='payment'
+                                        itemsList={itemsPaymentRecurrenteList}
+                                    />
                                 </Card>
                             </div>
                             <div className='w-6 flex flex-column gap-2'>
@@ -292,7 +155,10 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                                     className='p-2'
                                     variant="bordered"
                                 >   
-                                    {getInvoicesRecurrentes()}
+                                    <PaymentsInvoicesRecurrentsList
+                                        listType='invoice'
+                                        itemsList={itemsInvoiceRecurrenteList}
+                                    />
                                 </Card>
                             </div>
                         </div>
@@ -304,10 +170,16 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                     {isMobile ?
                         <TabView>
                             <TabPanel header="Pagos">
-                                {getPaymentsExporadicos()}
+                                {itemsPaymentExporadicoList && <PaymentsInvoicesSporadicList
+                                    listType='payment'
+                                    itemsList={itemsPaymentExporadicoList}
+                                />}
                             </TabPanel>
                             <TabPanel header="Ingresos">
-                                {getInvoicesExporadicos()}
+                                {itemsInvoiceExporadicoList && <PaymentsInvoicesSporadicList
+                                    listType='invoice'
+                                    itemsList={itemsInvoiceExporadicoList}
+                                />}
                             </TabPanel>
                         </TabView>                        
                         :
@@ -318,7 +190,10 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                                     className='p-2'
                                     variant="bordered"
                                 >
-                                    {getPaymentsExporadicos()}                            
+                                    {itemsPaymentExporadicoList && <PaymentsInvoicesSporadicList
+                                        listType='payment'
+                                        itemsList={itemsPaymentExporadicoList}
+                                    />}
                                 </Card>
                             </div>
                             <div className='w-6 flex flex-column gap-2'>
@@ -327,7 +202,10 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                                     className='p-2'
                                     variant="bordered"
                                 >
-                                    {getInvoicesExporadicos()}
+                                    {itemsInvoiceExporadicoList && <PaymentsInvoicesSporadicList
+                                        listType='invoice'
+                                        itemsList={itemsInvoiceExporadicoList}
+                                    />}
                                 </Card>
                             </div>
                         </div>

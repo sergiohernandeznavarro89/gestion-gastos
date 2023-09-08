@@ -32,7 +32,7 @@ interface Props {
     itemType: number | undefined;
 };
 
-const NewPaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refresh, itemType }) => {
+const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refresh, itemType }) => {
     const user = useSelector((state: any) => state.userState);
     const [periodTypeId, setPeriodTypeId] = useState<number>(PeriodTypeEnum.Exporadico);
     const [ammountTypeId, setAmmountTypeId] = useState<number>(AmmountTypeEnum.Fijo);
@@ -314,4 +314,4 @@ const NewPaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refres
     )
 }
 
-export default NewPaymentForm
+export default PaymentForm
