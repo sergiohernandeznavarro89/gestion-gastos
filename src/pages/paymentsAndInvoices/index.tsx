@@ -265,7 +265,7 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                 />                
 
                 <div className='flex flex-column m-2 gap-3'>
-                    <Text h4 className='m-0' color='primary' >Pagos recurrentes / Ingresos recurrentes</Text>
+                    <Text h4 className='m-0' color='primary' >Recurrentes</Text>
                     {isMobile ?
                         <TabView>
                             <TabPanel header="Pagos">
@@ -300,7 +300,7 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                 </div>
 
                 <div className='flex flex-column m-2 gap-3'>
-                    <Text h4 className='m-0' color='primary' >Pagos exporádicos / Ingresos exporádicos</Text>
+                    <Text h4 className='m-0' color='primary' >Exporádicos</Text>
                     {isMobile ?
                         <TabView>
                             <TabPanel header="Pagos">
