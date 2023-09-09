@@ -4,6 +4,9 @@ import { ScrollPanel } from 'primereact/scrollpanel';
 import { Card, Text } from '@nextui-org/react';
 import { AmmountTypeEnum } from 'enums/AmmountTypeEnum';
 import { ItemResponse } from 'models/item/ItemResponse';
+import { Button } from 'primereact/button';
+import EditIcon from '@mui/icons-material/CreateOutlined';
+import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 
 type listType = 'payment' | 'invoice';
 
@@ -36,7 +39,11 @@ const PaymentsInvoicesRecurrentsList: FC<Props> = ({ listType, itemsList }) => {
                                         <div className='flex flex-column'>                                                            
                                             <Text h6 className='m-0' >{x.itemDesc}</Text>                                                    
                                             <Text h5 className='mt-2' color={listType === 'payment' ? 'red' : 'green'}>{x.ammountTypeId !== AmmountTypeEnum.Variable ? `${x.ammount} €` : listType === 'payment' ? 'Pago Variable' : 'Ingreso Variable'}</Text>
-                                        </div>                                                
+                                        </div>
+                                        <div className='flex flex-row gap-1'>
+                                            <Button icon={<EditIcon />} className='p-0 pt-1' style={{ height: 'fit-content', width:'2rem' }} rounded link />
+                                            <Button icon={<DeleteIcon />} className='p-0 pt-1' style={{ color:'red', height: 'fit-content', width:'2rem' }} rounded link />
+                                        </div>
                                     </div>
                                 </Card>
                             )
