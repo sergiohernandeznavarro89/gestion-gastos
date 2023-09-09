@@ -149,7 +149,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                     <div className='flex gap-2 justify-content-center align-items-center'>
                                                         <div className='flex flex-column w-12'>
                                                             <Text h6 className='m-0' >{x.itemDesc}</Text>
-                                                            <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammountTypeId === AmmountTypeEnum.Variable ? 'Importe Variable' : x.ammount} €</Text>
+                                                            <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammountTypeId === AmmountTypeEnum.Variable ? 'Importe Variable' : `${x.ammount} €`}</Text>
                                                         </div>                                                            
                                                     </div>
                                                 </Card>                            
@@ -216,7 +216,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                     <div className='flex gap-2 justify-content-center align-items-center'>                                                        
                                                         <div className='flex flex-column w-12'>                                                          
                                                             <Text h6 className='m-0' >{x.itemDesc}</Text>
-                                                            <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammountTypeId === AmmountTypeEnum.Variable ? 'Importe Variable' : x.ammount} €</Text>
+                                                            <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammountTypeId === AmmountTypeEnum.Variable ? 'Importe Variable' : `${x.ammount} €`}</Text>
                                                         </div>                                                            
                                                     </div>
                                                 </Card>                            
