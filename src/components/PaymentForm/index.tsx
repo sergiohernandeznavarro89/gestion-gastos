@@ -1,9 +1,7 @@
-import { Input } from '@nextui-org/react';
-import { ValidationSpan } from 'pages/login/styled';
+
 import { FC, useState, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Button } from 'primereact/button';
-import { AddAccount } from 'services/account/AccountService';
 import { useSelector } from 'react-redux';
 import { Text } from '@nextui-org/react';
 import { classNames } from 'primereact/utils';
@@ -23,18 +21,19 @@ import { ItemTypeEnum } from 'enums/ItemTypeEnum';
 import { AddItem } from 'services/item/ItemService';
 import moment from 'moment'
 import 'moment/locale/es';
+import { ItemResponse } from 'models/item/ItemResponse';
 
 interface Props {
     cancelClick: () => void;
     displayToast: (message: string, severity: string) => void;
     accounts: AccountResponse[];
-    refresh: () => void;
     itemType: number | undefined;
+    item?: ItemResponse;
 };
 
-const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refresh, itemType }) => {
+const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, itemType, item }) => {
     const user = useSelector((state: any) => state.userState);
-    const [periodTypeId, setPeriodTypeId] = useState<number>(PeriodTypeEnum.Exporadico);
+    const [periodTypeId, setPeriodTypeId] = useState<number>(item ? PeriodTypeEnum.Recurrente : PeriodTypeEnum.Exporadico);
     const [ammountTypeId, setAmmountTypeId] = useState<number>(AmmountTypeEnum.Fijo);
     const [categoriesList, setCategoriesList] = useState<CategoryResponse[]>([]);
     const [subCategoriesList, setSubCategoriesList] = useState<SubCategoryResponse[]>([]);
@@ -58,15 +57,15 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refresh, 
     }, [user.userId]);
 
     const defaultValues = {
-        itemName: '',
-        itemDesc: '',
-        ammount: null,
-        periodity: null,
-        startDate: null,
-        endDate: null,
-        categoryId: null,
-        subCategoryId: null,
-        accountId: null
+        itemName: item ? item.itemName : '',
+        itemDesc: item ? item.itemDesc : '',
+        ammount: item ? item.ammount.toString() : '',
+        periodity: item ? item.periodity : null,
+        startDate: item ? item.startDate : null,
+        endDate: item ? item.endDate : null,
+        categoryId: item ? item.categoryId : null,
+        subCategoryId: item ? item.subCategoryId : null,
+        accountId: item ? item.accountId : null
     };
 
     const {
@@ -74,17 +73,16 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refresh, 
         formState: { errors },
         handleSubmit,
         getValues,
-        reset
     } = useForm({ defaultValues });
     
     const formatPostRequest = (data: any) => {
         const request = {            
             itemName: data.itemName,
             itemDesc: data.itemDesc,
-            ammount: data.ammount || 0,
+            ammount: data.ammount || null,
             periodity: data.periodity,
-            startDate: moment(data.startDate).format('YYYY-MM-DD HH:mm:ss') || moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
-            endDate: moment(data.endDate).format('YYYY-MM-DD HH:mm:ss') || moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+            startDate: data.startDate ? moment(data.startDate).format('YYYY-MM-DD HH:mm:ss') : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+            endDate: data.endDate ? moment(data.endDate).format('YYYY-MM-DD HH:mm:ss') : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             cancelled: false,
             categoryId: data.categoryId,
             subCategoryId: data.subCategoryId,
@@ -94,7 +92,7 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refresh, 
             userId: user.userId,
             accountId: data.accountId
         }
-
+        debugger;
         return request;
     }
 
@@ -125,7 +123,7 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refresh, 
         <>
             <form className='flex flex-column gap-4 w-12' onSubmit={handleSubmit(onSubmit)}>
                 <div className='flex flex-column gap-3'>
-                    <div className='flex flex-column gap-2'>
+                    {!item && <div className='flex flex-column gap-2'>
                         <Text h6 className='m-0' color='primary'>Tipo de cobro</Text>
                         <div className='flex gap-2 flex-wrap'>
                             {periodTypeId === PeriodTypeEnum.Exporadico ? 
@@ -133,7 +131,7 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refresh, 
                                 <ButtonTag label='Exporádico' rounded onClick={() => {setPeriodTypeId(PeriodTypeEnum.Exporadico); setAmmountTypeId(AmmountTypeEnum.Fijo)}} type='button'/>}
                             {periodTypeId === PeriodTypeEnum.Recurrente ? <ButtonTagSelected label='Recurrente' rounded type='button'/> : <ButtonTag label='Recurrente' rounded onClick={() => setPeriodTypeId(PeriodTypeEnum.Recurrente)} type='button'/>}
                         </div>
-                    </div>
+                    </div>}
 
                     {periodTypeId === PeriodTypeEnum.Recurrente && <div className='flex flex-column gap-2'>
                         <Text h6 className='m-0' color='primary'>Tipo de pago</Text>
@@ -185,7 +183,8 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refresh, 
                                 <>
                                     <label htmlFor={field.name} className={classNames({ 'p-error': errors.ammount })}></label>
                                     <span className="p-float-label">
-                                        <InputNumber suffix=' €' id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.value)} />
+                                        <InputText prefix=' €' id={field.name} value={field.value} className={`p-inputtext-sm w-full`} onChange={(e) => field.onChange(e.target.value)} />
+                                        {/* <InputNumber suffix=' €' id={field.ammount} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.value)} /> */}
                                         <label htmlFor={field.name}>Cantidad</label>
                                     </span>
                                     {errors.ammount && <small className="p-error">{errors.ammount.message}</small>}
@@ -275,7 +274,7 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refresh, 
                     <Controller
                         name="subCategoryId"
                         control={control}
-                        render={({ field, fieldState }) => (
+                        render={({ field }) => (
                             <>
                                 <label htmlFor={field.name}></label>
                                 <span className="p-float-label">
@@ -292,7 +291,8 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, refresh, 
                         name="accountId"
                         control={control}
                         rules={{ required: 'Cuenta es requerida' }}
-                        render={({ field, fieldState }) => (
+                        render={({ field, fieldState }
+                            ) => (
                             <>
                                 <label htmlFor={field.name} className={classNames({ 'p-error': errors.accountId })}></label>
                                 <span className="p-float-label">

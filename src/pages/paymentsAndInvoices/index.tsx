@@ -11,9 +11,7 @@ import { TabView, TabPanel } from 'primereact/tabview';
 import { GetAllItems } from 'services/item/ItemService';
 import { ItemResponse } from 'models/item/ItemResponse';
 import { ItemTypeEnum } from 'enums/ItemTypeEnum';
-import { AmmountTypeEnum } from 'enums/AmmountTypeEnum';
 import { PeriodTypeEnum } from 'enums/PeriodTypeEnum';
-import { ScrollPanel } from 'primereact/scrollpanel';
 
 import _ from 'lodash';
 import PaymentsInvoicesRecurrentsList from 'components/PaymentsInvoicesRecurrentsList';

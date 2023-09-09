@@ -109,7 +109,7 @@ const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
             </Dialog>              
 
             <Dialog header={itemType === ItemTypeEnum.Ingreso ? "Nuevo Ingreso" : "Nuevo Pago"} maximizable visible={showDialogPayment} style={{ width: '95%' }} onHide={() => setShowDialogPayment(false)}>
-                <PaymentForm itemType={itemType} cancelClick={() => setShowDialogPayment(false)} displayToast={displayToast} accounts={accounts} refresh={refresh}/>
+                <PaymentForm itemType={itemType} cancelClick={() => setShowDialogPayment(false)} displayToast={displayToast} accounts={accounts}/>
             </Dialog>            
         </>
     )
