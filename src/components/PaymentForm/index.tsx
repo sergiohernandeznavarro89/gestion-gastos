@@ -40,10 +40,10 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, acc
     const [subCategoriesFilterList, setSubCategoriesFilterList] = useState<SubCategoryResponse[]>([]);
 
     useEffect(() => {
-        if(item?.categoryId){
+        if(item?.categoryId && subCategoriesList.length > 0){
             changeCategory();
         }
-    }, [item])
+    }, [item, subCategoriesList])
     
 
     useEffect(() => {
@@ -124,6 +124,7 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, acc
     };
 
     const changeCategory = () => {
+        debugger;
         const categoryIdSelected = getValues('categoryId');
         if(categoryIdSelected){
             setSubCategoriesFilterList(subCategoriesList.filter(x => x.categoryId === categoryIdSelected));
