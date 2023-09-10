@@ -57,7 +57,6 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                 return `${startDate.getMonth() + 1}-${startDate.getFullYear()}`;
             });
             setItemsPaymentExporadicoList(paymentsGroupedByMonthYear);
-            console.log({paymentsGroupedByMonthYear});
             
             const invoicesExporadicos = itemsList.filter(x => x.itemTypeId === ItemTypeEnum.Ingreso && x.periodTypeId === PeriodTypeEnum.Exporadico);
             const invoicesSortedItems = invoicesExporadicos.sort((a: any , b: any) => b.startDate - a.startDate);
@@ -66,7 +65,6 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                 return `${startDate.getMonth() + 1}-${startDate.getFullYear()}`;
             });
             setItemsInvoiceExporadicoList(invoicesGroupedByMonthYear);
-            console.log({invoicesGroupedByMonthYear});
         }
     }, [itemsList])
     
@@ -124,12 +122,16 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                                 <PaymentsInvoicesRecurrentsList
                                     listType='payment'
                                     itemsList={itemsPaymentRecurrenteList}
+                                    displayToast={displayToast}
+                                    itemType={ItemTypeEnum.Gasto}
                                 />
                             </TabPanel>
                             <TabPanel header="Ingresos">
                                 <PaymentsInvoicesRecurrentsList
                                     listType='invoice'
                                     itemsList={itemsInvoiceRecurrenteList}
+                                    displayToast={displayToast}
+                                    itemType={ItemTypeEnum.Ingreso}
                                 />
                             </TabPanel>
                         </TabView>                        
@@ -144,6 +146,8 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                                     <PaymentsInvoicesRecurrentsList
                                         listType='payment'
                                         itemsList={itemsPaymentRecurrenteList}
+                                        displayToast={displayToast}
+                                        itemType={ItemTypeEnum.Gasto}
                                     />
                                 </Card>
                             </div>
@@ -156,6 +160,8 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                                     <PaymentsInvoicesRecurrentsList
                                         listType='invoice'
                                         itemsList={itemsInvoiceRecurrenteList}
+                                        displayToast={displayToast}
+                                        itemType={ItemTypeEnum.Ingreso}
                                     />
                                 </Card>
                             </div>
