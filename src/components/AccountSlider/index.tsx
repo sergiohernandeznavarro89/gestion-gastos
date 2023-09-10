@@ -29,6 +29,8 @@ const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
     const [showDialogNewAccount, setShowDialogNewAccount] = useState<boolean>(false);
     const [showDialogPayment, setShowDialogPayment] = useState<boolean>(false);
     const [itemType, setItemType] = useState<number>();
+    const [accountSelected, setAccountSelected] = useState<number>();
+    const [accountNameSelected, setAccountNameSelected] = useState<string>('');
 
     const displayToast = (message: string, severity: string) => {
         if (severity === 'success') {
@@ -89,8 +91,8 @@ const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
                                     <Text h4 color='primary' >{item.accountName}</Text>
                                     <Text h5 color={item.ammount > 0 ? 'green' : 'red'}>{item.ammount} €</Text>
                                     <div className='flex flex-row justify-content-between'>
-                                        <Button icon={<ArrowCircleDownIcon />} severity='success' rounded text raised onClick={() => {setShowDialogPayment(true); setItemType(ItemTypeEnum.Ingreso)}}/>
-                                        <Button icon={<ArrowCircleUpIcon />} severity='danger' rounded text raised onClick={() => {setShowDialogPayment(true); setItemType(ItemTypeEnum.Gasto)}}/>
+                                        <Button icon={<ArrowCircleDownIcon />} severity='success' rounded text raised onClick={() => {setShowDialogPayment(true); setItemType(ItemTypeEnum.Ingreso); setAccountSelected(item.accountId); setAccountNameSelected(item.accountName)}}/>
+                                        <Button icon={<ArrowCircleUpIcon />} severity='danger' rounded text raised onClick={() => {setShowDialogPayment(true); setItemType(ItemTypeEnum.Gasto); setAccountSelected(item.accountId); setAccountNameSelected(item.accountName)}}/>
                                     </div>
                                 </Box>
                             </Card>
@@ -108,8 +110,8 @@ const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
                 <NewAccountForm cancelClick={() => setShowDialogNewAccount(false)} displayToast={displayToast} />
             </Dialog>              
 
-            <Dialog header={itemType === ItemTypeEnum.Ingreso ? "Nuevo Ingreso" : "Nuevo Pago"} maximizable visible={showDialogPayment} style={{ width: '95%' }} onHide={() => setShowDialogPayment(false)}>
-                <PaymentForm itemType={itemType} cancelClick={() => setShowDialogPayment(false)} displayToast={displayToast} accounts={accounts}/>
+            <Dialog header={itemType === ItemTypeEnum.Ingreso ? `Nuevo Ingreso en ${accountNameSelected}` : `Nuevo Pago en ${accountNameSelected}`} maximizable visible={showDialogPayment} style={{ width: '95%' }} onHide={() => setShowDialogPayment(false)}>
+                <PaymentForm itemType={itemType} cancelClick={() => setShowDialogPayment(false)} displayToast={displayToast} accountId={accountSelected}/>
             </Dialog>            
         </>
     )
