@@ -38,7 +38,14 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, acc
     const [categoriesList, setCategoriesList] = useState<CategoryResponse[]>([]);
     const [subCategoriesList, setSubCategoriesList] = useState<SubCategoryResponse[]>([]);
     const [subCategoriesFilterList, setSubCategoriesFilterList] = useState<SubCategoryResponse[]>([]);
+
+    useEffect(() => {
+        if(item?.categoryId){
+            changeCategory();
+        }
+    }, [item])
     
+
     useEffect(() => {
         if (user.userId) {            
             (async () => {
@@ -91,7 +98,7 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, acc
             ammountTypeId: periodTypeId === PeriodTypeEnum.Exporadico ? AmmountTypeEnum.Fijo : ammountTypeId,
             accountId: data.accountId
         }
-        
+
         if(!item){
             var postData = {...requestData, ...{periodTypeId: periodTypeId, userId: user.userId}};
             const response = await AddItem(postData);
