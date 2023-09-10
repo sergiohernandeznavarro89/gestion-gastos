@@ -2,6 +2,7 @@ import axios from "axios";
 import { AddItemCommand } from "models/item/AddItemCommand";
 import { ItemResponse } from "models/item/ItemResponse";
 import { PendingPayItemsResponse } from "models/item/PendingPayItemResponse";
+import { UpdateItemCommand } from "models/item/UpdateItemCommand";
 
 const API = "https://sergiohn89.bsite.net";
 
@@ -23,6 +24,16 @@ export const GetAllItems = async (userId: number): Promise<ItemResponse[]> => {
 export const AddItem = async (item: AddItemCommand) => {
     const body = JSON.stringify(item);
     const response = await axios.post(`${API}/api/Item/AddItem`, body, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
+}
+
+export const UpdateItem = async (item: UpdateItemCommand) => {
+    const body = JSON.stringify(item);
+    const response = await axios.put(`${API}/api/Item/UpdateItem`, body, {
         headers: {
             'Content-Type': 'application/json'
         }

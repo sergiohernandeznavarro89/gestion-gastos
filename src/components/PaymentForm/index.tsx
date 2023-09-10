@@ -16,25 +16,25 @@ import { CategoryResponse } from 'models/category/CategoryResponse';
 import { SubCategoryResponse } from 'models/subCategory/SubCategoryResponse';
 import { GetCategoriesByUser } from 'services/category/CategoryService';
 import { GetSubCategoriesByUser } from 'services/subCategory/SubCategoryService';
-import { AccountResponse } from 'models/account/AccountResponse';
 import { ItemTypeEnum } from 'enums/ItemTypeEnum';
-import { AddItem } from 'services/item/ItemService';
+import { AddItem, UpdateItem } from 'services/item/ItemService';
 import moment from 'moment'
 import 'moment/locale/es';
 import { ItemResponse } from 'models/item/ItemResponse';
+import { ResponseBase } from 'models/shared/ResponseBase';
 
 interface Props {
     cancelClick: () => void;
     displayToast: (message: string, severity: string) => void;
-    accounts: AccountResponse[];
     itemType: number | undefined;
     item?: ItemResponse;
+    accountId: number | undefined;
 };
 
-const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, itemType, item }) => {
+const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, accountId }) => {
     const user = useSelector((state: any) => state.userState);
     const [periodTypeId, setPeriodTypeId] = useState<number>(item ? PeriodTypeEnum.Recurrente : PeriodTypeEnum.Exporadico);
-    const [ammountTypeId, setAmmountTypeId] = useState<number>(AmmountTypeEnum.Fijo);
+    const [ammountTypeId, setAmmountTypeId] = useState<number>(item ? item.ammountTypeId : AmmountTypeEnum.Fijo);
     const [categoriesList, setCategoriesList] = useState<CategoryResponse[]>([]);
     const [subCategoriesList, setSubCategoriesList] = useState<SubCategoryResponse[]>([]);
     const [subCategoriesFilterList, setSubCategoriesFilterList] = useState<SubCategoryResponse[]>([]);
@@ -55,17 +55,18 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, itemType,
             })();
         }
     }, [user.userId]);
+    
 
-    const defaultValues = {
+    const defaultValues = {        
         itemName: item ? item.itemName : '',
         itemDesc: item ? item.itemDesc : '',
         ammount: item ? item.ammount.toString() : '',
         periodity: item ? item.periodity : null,
-        startDate: item ? item.startDate : null,
-        endDate: item ? item.endDate : null,
+        startDate: item ? new Date(item.startDate) : null,
+        endDate: item ? new Date(item.endDate) : null,
         categoryId: item ? item.categoryId : null,
         subCategoryId: item ? item.subCategoryId : null,
-        accountId: item ? item.accountId : null
+        accountId: item ? item.accountId : accountId
     };
 
     const {
@@ -75,11 +76,11 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, itemType,
         getValues,
     } = useForm({ defaultValues });
     
-    const formatPostRequest = (data: any) => {
-        const request = {            
+    const request = async (data: any): Promise<ResponseBase> => {
+        const requestData = {            
             itemName: data.itemName,
             itemDesc: data.itemDesc,
-            ammount: data.ammount || null,
+            ammount: ammountTypeId === AmmountTypeEnum.Variable ? 0 : data.ammount || 0,
             periodity: data.periodity,
             startDate: data.startDate ? moment(data.startDate).format('YYYY-MM-DD HH:mm:ss') : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
             endDate: data.endDate ? moment(data.endDate).format('YYYY-MM-DD HH:mm:ss') : moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
@@ -88,17 +89,23 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, itemType,
             subCategoryId: data.subCategoryId,
             itemTypeId: itemType || ItemTypeEnum.Gasto,
             ammountTypeId: periodTypeId === PeriodTypeEnum.Exporadico ? AmmountTypeEnum.Fijo : ammountTypeId,
-            periodTypeId: periodTypeId,
-            userId: user.userId,
             accountId: data.accountId
         }
-        debugger;
-        return request;
+        
+        if(!item){
+            var postData = {...requestData, ...{periodTypeId: periodTypeId, userId: user.userId}};
+            const response = await AddItem(postData);
+            return response;
+        }
+        else{
+            var putData = {...requestData, ...{itemId: item.itemId}};
+            const response = await UpdateItem(putData);
+            return response;
+        }
     }
 
     const onSubmit = async (data: any) => {        
-        const requestCommand = formatPostRequest(data);        
-        const response = await AddItem(requestCommand);
+        var response = await request(data);
 
         if (response?.success) {
             cancelClick();
@@ -183,8 +190,7 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, itemType,
                                 <>
                                     <label htmlFor={field.name} className={classNames({ 'p-error': errors.ammount })}></label>
                                     <span className="p-float-label">
-                                        <InputText prefix=' €' id={field.name} value={field.value} className={`p-inputtext-sm w-full`} onChange={(e) => field.onChange(e.target.value)} />
-                                        {/* <InputNumber suffix=' €' id={field.ammount} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.value)} /> */}
+                                        <InputText prefix=' €' id={field.name} value={field.value} className={`p-inputtext-sm w-full`} onChange={(e) => field.onChange(e.target.value)} />                                        
                                         <label htmlFor={field.name}>Cantidad</label>
                                     </span>
                                     {errors.ammount && <small className="p-error">{errors.ammount.message}</small>}
@@ -286,7 +292,7 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, itemType,
                     />
                 </div>
                 
-                <div className='flex flex-column gap-1'>
+                {item && <div className='flex flex-column gap-1'>
                     <Controller
                         name="accountId"
                         control={control}
@@ -296,14 +302,15 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, accounts, itemType,
                             <>
                                 <label htmlFor={field.name} className={classNames({ 'p-error': errors.accountId })}></label>
                                 <span className="p-float-label">
-                                    <Dropdown showClear value={field.value} onChange={(e) => {field.onChange(e.target.value)}} options={accounts} optionValue='accountId' optionLabel="accountName" className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+                                    <InputText disabled id={field.name} value={item?.accountName} className={`p-inputtext-sm w-full`} />                                        
+                                    {/* <Dropdown disabled showClear value={field.value} onChange={(e) => {field.onChange(e.target.value)}} options={accounts} optionValue='accountId' optionLabel="accountName" className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} /> */}
                                     <label htmlFor={field.name}>Cuenta</label>
                                 </span>
                                 {errors.accountId && <small className="p-error">{errors.accountId.message}</small>}
                             </>
                         )}
                     />
-                </div>
+                </div>}
 
                 <div className='flex justify-content-end gap-2'>
                     <Button label="Cancelar" type='button' onClick={cancelClick} severity='danger' raised text size='small' />

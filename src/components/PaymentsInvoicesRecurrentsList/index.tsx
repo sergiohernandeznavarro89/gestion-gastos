@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ScrollPanel } from 'primereact/scrollpanel';
 import { Card, Text } from '@nextui-org/react';
@@ -7,17 +7,24 @@ import { ItemResponse } from 'models/item/ItemResponse';
 import { Button } from 'primereact/button';
 import EditIcon from '@mui/icons-material/CreateOutlined';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import { Dialog } from 'primereact/dialog';
+import PaymentForm from 'components/PaymentForm';
+import { ItemTypeEnum } from 'enums/ItemTypeEnum';
 
 type listType = 'payment' | 'invoice';
 
 interface Props {
     listType: listType;
     itemsList: ItemResponse[];
+    displayToast: (message: string, severity: string) => void;
+    itemType: number;
 };
 
-const PaymentsInvoicesRecurrentsList: FC<Props> = ({ listType, itemsList }) => {
+const PaymentsInvoicesRecurrentsList: FC<Props> = ({ listType, itemsList, displayToast, itemType }) => {
     const user = useSelector((state: any) => state.userState);    
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const [selectedItem, setSelectedItem] = useState<ItemResponse>();
+    const [showDialogPayment, setShowDialogPayment] = useState<boolean>(false);
 
     return (
         <>
@@ -41,7 +48,7 @@ const PaymentsInvoicesRecurrentsList: FC<Props> = ({ listType, itemsList }) => {
                                             <Text h5 className='mt-2' color={listType === 'payment' ? 'red' : 'green'}>{x.ammountTypeId !== AmmountTypeEnum.Variable ? `${x.ammount} €` : listType === 'payment' ? 'Pago Variable' : 'Ingreso Variable'}</Text>
                                         </div>
                                         <div className='flex flex-row gap-1'>
-                                            <Button icon={<EditIcon />} className='p-0 pt-1' style={{ height: 'fit-content', width:'2rem' }} rounded link />
+                                            <Button icon={<EditIcon />} className='p-0 pt-1' style={{ height: 'fit-content', width:'2rem' }} rounded link onClick={() => {setSelectedItem(x); setShowDialogPayment(true)}}/>
                                             <Button icon={<DeleteIcon />} className='p-0 pt-1' style={{ color:'red', height: 'fit-content', width:'2rem' }} rounded link />
                                         </div>
                                     </div>
@@ -58,6 +65,10 @@ const PaymentsInvoicesRecurrentsList: FC<Props> = ({ listType, itemsList }) => {
                     </div>
                 </ScrollPanel>
             </div>
+
+            <Dialog header={`Edición ${selectedItem?.itemName}`} maximizable visible={showDialogPayment} style={{ width: '95%' }} onHide={() => setShowDialogPayment(false)}>
+                <PaymentForm itemType={itemType} cancelClick={() => setShowDialogPayment(false)} displayToast={displayToast} accountId={selectedItem?.accountId} item={selectedItem}/>
+            </Dialog>    
         </>
     )
 }
