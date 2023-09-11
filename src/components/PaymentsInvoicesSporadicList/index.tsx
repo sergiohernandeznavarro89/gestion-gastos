@@ -30,6 +30,10 @@ const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList }) => {
         return suma;
     }
 
+    const getShortedList = (items: ItemResponse[]) : ItemResponse[]  => {
+        return items.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+    }         
+
     return (
         <>
             <div style={{height:'100%', overflow:'hidden'}}>
@@ -39,9 +43,9 @@ const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList }) => {
                             <div className='flex flex-column gap-2' key={monthKey}>
                                 <div className='flex flex-row justify-content-between'>
                                     <Text h5 className='m-0' color='primary' >{monthKey}</Text>                                                                                                  
-                                    <Text h5 className='m-0' color='primary' >Total: {getTotalAmmounts(itemsList[monthKey])} €</Text>
+                                    <Text h5 className='m-0' color='primary' >Total: <span style={{color: listType === 'payment' ? 'red' : 'green'}}>{getTotalAmmounts(itemsList[monthKey])} €</span></Text>
                                 </div>
-                                {itemsList[monthKey].map((item: any, index: any) => (
+                                {getShortedList(itemsList[monthKey]).map((item: any, index: any) => (
                                     <Card
                                         className='p-2'
                                         key={item.itemId}
