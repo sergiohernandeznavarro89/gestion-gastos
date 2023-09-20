@@ -21,7 +21,7 @@ const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList }) => {
     const isMobile = window.matchMedia('(max-width: 768px)').matches;    
 
     const getTotalAmmounts = (items: ItemResponse[] ): number => {
-        let suma = 0;
+        let suma: number = 0;
 
         for (const item of items) {
             suma += item.ammount;
@@ -43,7 +43,7 @@ const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList }) => {
                             <div className='flex flex-column gap-2' key={monthKey}>
                                 <div className='flex flex-row justify-content-between'>
                                     <Text h5 className='m-0' color='primary' >{monthKey}</Text>                                                                                                  
-                                    <Text h5 className='m-0' color='primary' >Total: <span style={{color: listType === 'payment' ? 'red' : 'green'}}>{getTotalAmmounts(itemsList[monthKey])} €</span></Text>
+                                    <Text h5 className='m-0' color='primary' >Total: <span style={{color: listType === 'payment' ? 'red' : 'green'}}>{getTotalAmmounts(itemsList[monthKey]).toFixed(2)} €</span></Text>
                                 </div>
                                 {getShortedList(itemsList[monthKey]).map((item: any, index: any) => (
                                     <Card
