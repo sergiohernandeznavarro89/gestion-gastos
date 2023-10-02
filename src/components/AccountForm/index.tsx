@@ -3,23 +3,26 @@ import { ValidationSpan } from 'pages/login/styled';
 import { FC } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Button } from 'primereact/button';
-import { AddAccount } from 'services/account/AccountService';
+import { AddAccount, UpdateAccount } from 'services/account/AccountService';
 import { useSelector } from 'react-redux';
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { classNames } from 'primereact/utils';
+import { AccountResponse } from 'models/account/AccountResponse';
+import { ResponseBase } from 'models/shared/ResponseBase';
 
 interface Props {
     cancelClick: () => void;
     displayToast: (message: string, severity: string) => void;
+    account?: AccountResponse;
 };
 
-const NewAccountForm: FC<Props> = ({ cancelClick, displayToast }) => {
+const AccountForm: FC<Props> = ({ cancelClick, displayToast, account }) => {
     const user = useSelector((state: any) => state.userState);
 
     const defaultValues = {
-        accountName: '',
-        ammount: null
+        accountName: account ? account.accountName : '',
+        ammount: account ? account.ammount : null
     };
 
     const {
@@ -30,9 +33,22 @@ const NewAccountForm: FC<Props> = ({ cancelClick, displayToast }) => {
         reset
     } = useForm({ defaultValues });
 
+    const request = async (data: any): Promise<ResponseBase> => {        
+
+        if(!account){
+            var postData = {...data, ...{userId: user.userId}};
+            const response = await AddAccount(postData);
+            return response;
+        }
+        else{
+            var putData = {...data, ...{accountId: account.accountId}};
+            const response = await UpdateAccount(putData);
+            return response;
+        }
+    }
+
     const onSubmit = async (data: any) => {
-        const postData = { ...data, ...{ userId: user.userId } };
-        const response = await AddAccount(postData);
+        const response = await request(data);
 
         if (response?.success) {
             cancelClick();
@@ -92,4 +108,4 @@ const NewAccountForm: FC<Props> = ({ cancelClick, displayToast }) => {
     )
 }
 
-export default NewAccountForm
+export default AccountForm

@@ -92,13 +92,14 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                         <Text h4 className='m-0' color='primary' >Gastos/Ingresos Pendientes</Text>
                     </div>
                     {isMobile ?
-                        <TabView>
+                        <TabView className='p-2'>
                             <TabPanel header="Este Mes">
                                 <div style={{height:'100%', overflow:'hidden'}}>
                                     <ScrollPanel style={{ width: '100%', height: '400px' }}>
-                                        <div className='flex flex-column gap-2'>
+                                        <div className='flex flex-column gap-3 p-2'>
                                             {pendingPayItemsAux.map(x => (                                                
-                                                <Card
+                                                <Card             
+                                                    style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}                                   
                                                     className='p-2'
                                                     key={x.itemId}
                                                     variant="bordered"
@@ -132,9 +133,10 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                             <TabPanel header="Proximo Mes">
                                 <div style={{height:'100%', overflow:'hidden'}}>
                                 <ScrollPanel style={{ width: '100%', height: '400px' }}>
-                                        <div className='flex flex-column gap-2'>
+                                        <div className='flex flex-column gap-3 p-2'>
                                             {pendingPayItemsNextMonth.map(x => (
                                                 <Card
+                                                    style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
                                                     className='p-2'
                                                     key={x.itemId}
                                                     variant="bordered"
@@ -165,9 +167,10 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                 <Text h5 className='m-0' color='primary' >Este Mes</Text>
                                 <div style={{height:'100%', overflow:'hidden'}}>
                                     <ScrollPanel style={{ width: '100%', height: '400px' }}>
-                                        <div className='flex flex-column gap-2'>
+                                        <div className='flex flex-column gap-3 p-2'>
                                             {pendingPayItemsAux.map(x => (
                                                 <Card
+                                                    style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
                                                     className='p-2'
                                                     key={x.itemId}
                                                     variant="bordered"
@@ -200,9 +203,10 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                 <Text h5 className='m-0' color='primary' >Proximo Mes</Text>
                                 <div style={{height:'100%', overflow:'hidden'}}>
                                     <ScrollPanel style={{ width: '100%', height: '400px' }}>
-                                        <div className='flex flex-column gap-2'>
+                                        <div className='flex flex-column gap-3 p-2'>
                                             {pendingPayItemsNextMonth.map(x => (
                                                 <Card
+                                                    style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
                                                     className='p-2'
                                                     key={x.itemId}
                                                     variant="bordered"

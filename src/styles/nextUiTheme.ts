@@ -6,7 +6,7 @@ export const nextUiTheme = createTheme({
     theme: {
         colors: {
             // brand colors
-            background: '#DEDEDE',
+            background: '#eff2fc',
         },
     }
 })

@@ -12,7 +12,6 @@ import { PendingPayItemsResponse } from 'models/item/PendingPayItemResponse';
 
 import AccountSlider from 'components/AccountSlider';
 import PendingPayItems from 'components/PendingPayItems';
-import { RingLoader } from 'react-spinners';
 import Spinner from 'components/Spinner';
 
 interface Props {
