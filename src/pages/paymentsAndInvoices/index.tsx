@@ -51,7 +51,11 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
             setItemsInvoiceRecurrenteList(invoicesRecurrentes);
 
             const paymentsExporadicos: ItemResponse[] = itemsList.filter(x => x.itemTypeId === ItemTypeEnum.Gasto && x.periodTypeId === PeriodTypeEnum.Exporadico);
-            const paymentsSortedItems = paymentsExporadicos.sort((a: any , b: any) => b.startDate - a.startDate);
+            const paymentsSortedItems = paymentsExporadicos.sort((a, b) => {
+                const dateA = new Date(a.startDate).getTime();
+                const dateB = new Date(b.startDate).getTime();
+                return dateB - dateA;
+            });
             const paymentsGroupedByMonthYear = _.groupBy(paymentsSortedItems, (item: any) => {
                 const startDate = new Date(item.startDate);
                 return `${startDate.getMonth() + 1}-${startDate.getFullYear()}`;
@@ -59,7 +63,11 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
             setItemsPaymentExporadicoList(paymentsGroupedByMonthYear);
             
             const invoicesExporadicos = itemsList.filter(x => x.itemTypeId === ItemTypeEnum.Ingreso && x.periodTypeId === PeriodTypeEnum.Exporadico);
-            const invoicesSortedItems = invoicesExporadicos.sort((a: any , b: any) => b.startDate - a.startDate);
+            const invoicesSortedItems = invoicesExporadicos.sort((a, b) => {
+                const dateA = new Date(a.startDate).getTime();
+                const dateB = new Date(b.startDate).getTime();
+                return dateB - dateA;
+            });
             const invoicesGroupedByMonthYear = _.groupBy(invoicesSortedItems, (item: any) => {
                 const startDate = new Date(item.startDate);
                 return `${startDate.getMonth() + 1}-${startDate.getFullYear()}`;
