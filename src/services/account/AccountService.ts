@@ -1,6 +1,7 @@
 import axios from "axios";
 import { AccountResponse } from "models/account/AccountResponse";
 import { AddAccountCommand } from "models/account/AddAccountCommand";
+import { UpdateAccountCommand } from "models/account/UpdateAccountCommand";
 
 const API = "https://sergiohn89.bsite.net";
 
@@ -12,6 +13,16 @@ export const GetAccountsByUser = async (userId: number): Promise<AccountResponse
 export const AddAccount = async (account: AddAccountCommand) => {
     const body = JSON.stringify(account);
     const response = await axios.post(`${API}/api/Account/AddAccount`, body, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
+}
+
+export const UpdateAccount = async (account: UpdateAccountCommand) => {
+    const body = JSON.stringify(account);
+    const response = await axios.put(`${API}/api/Account/UpdateAccount`, body, {
         headers: {
             'Content-Type': 'application/json'
         }
