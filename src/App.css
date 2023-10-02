@@ -48,3 +48,7 @@
 .p-scrollpanel .p-scrollpanel-bar{
   background: var(--blue-500) !important;
 }
+
+.p-tabview-panels{
+  padding: .5rem !important;
+}

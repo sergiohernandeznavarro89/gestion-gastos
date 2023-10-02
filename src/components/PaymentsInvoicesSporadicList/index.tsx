@@ -40,13 +40,14 @@ const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList }) => {
                 <ScrollPanel style={{ width: '100%', height: `${isMobile ? '200px' : '400px'}` }}>
                     <div className='flex flex-column gap-2'>
                         {Object.keys(itemsList)?.length > 0 ? Object.keys(itemsList).map((monthKey) => (
-                            <div className='flex flex-column gap-2' key={monthKey}>
+                            <div className='flex flex-column gap-3 p-2' key={monthKey}>
                                 <div className='flex flex-row justify-content-between'>
                                     <Text h5 className='m-0' color='primary' >{monthKey}</Text>                                                                                                  
                                     <Text h5 className='m-0' color='primary' >Total: <span style={{color: listType === 'payment' ? 'red' : 'green'}}>{getTotalAmmounts(itemsList[monthKey]).toFixed(2)} €</span></Text>
                                 </div>
                                 {getShortedList(itemsList[monthKey]).map((item: any, index: any) => (
                                     <Card
+                                        style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
                                         className='p-2'
                                         key={item.itemId}
                                         variant="bordered"
@@ -67,6 +68,7 @@ const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList }) => {
                         ))
                         :
                         <Card
+                            style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
                             className='p-2'
                             variant="bordered"
                         >

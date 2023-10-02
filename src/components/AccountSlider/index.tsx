@@ -3,20 +3,16 @@ import { FC, useState } from 'react';
 import { AccountResponse } from 'models/account/AccountResponse';
 
 import { Text } from '@nextui-org/react';
-
 import Box from '@mui/joy/Box';
 import { Card } from '@nextui-org/react';
-
-import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
-import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import AddIcon from '@mui/icons-material/Add';
-
 import { Button } from 'primereact/button';
-import NewAccountForm from 'components/NewAccountForm';
 import { ToastContainer, toast } from 'react-toastify';
-import PaymentForm from 'components/PaymentForm';
 import { Dialog } from 'primereact/dialog';
-import { ItemTypeEnum } from 'enums/ItemTypeEnum';
+
+import AccountForm from 'components/AccountForm';
+import AccountCard from 'components/AccountCard';
+import { classNames } from 'primereact/utils';
 
 
 interface Props {
@@ -27,10 +23,6 @@ interface Props {
 const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
 
     const [showDialogNewAccount, setShowDialogNewAccount] = useState<boolean>(false);
-    const [showDialogPayment, setShowDialogPayment] = useState<boolean>(false);
-    const [itemType, setItemType] = useState<number>();
-    const [accountSelected, setAccountSelected] = useState<number>();
-    const [accountNameSelected, setAccountNameSelected] = useState<string>('');
 
     const displayToast = (message: string, severity: string) => {
         if (severity === 'success') {
@@ -67,6 +59,7 @@ const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
 
                 <div className='flex flex-row gap-2'>
                     <Box
+                        className='pl-1 pr-1'
                         sx={{
                             display: 'flex',
                             gap: 1,
@@ -81,21 +74,12 @@ const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
                         }}
                     >
                         {accounts.length > 0 ? accounts.map((item) => (
-                            <Card
-                                className='p-2'
-                                style={{ minWidth: '130px', maxWidth: '200px' }}
-                                key={item.accountName}
-                                variant="bordered"
-                            >
-                                <Box sx={{ whiteSpace: 'nowrap' }}>
-                                    <Text h4 color='primary' >{item.accountName}</Text>
-                                    <Text h5 color={item.ammount > 0 ? 'green' : 'red'}>{item.ammount} €</Text>
-                                    <div className='flex flex-row justify-content-between'>
-                                        <Button icon={<ArrowCircleDownIcon />} severity='success' rounded text raised onClick={() => {setShowDialogPayment(true); setItemType(ItemTypeEnum.Ingreso); setAccountSelected(item.accountId); setAccountNameSelected(item.accountName)}}/>
-                                        <Button icon={<ArrowCircleUpIcon />} severity='danger' rounded text raised onClick={() => {setShowDialogPayment(true); setItemType(ItemTypeEnum.Gasto); setAccountSelected(item.accountId); setAccountNameSelected(item.accountName)}}/>
-                                    </div>
-                                </Box>
-                            </Card>
+                            <AccountCard
+                                key={`account-${item.accountId}`}
+                                displayToast={displayToast}
+                                item={item}
+                            />
+
                         )) : <Card
                             className='p-2 w-12'
                             variant="bordered"
@@ -107,12 +91,8 @@ const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
             </div>
 
             <Dialog header="Nueva Cuenta" maximizable visible={showDialogNewAccount} style={{ width: '95%' }} onHide={() => setShowDialogNewAccount(false)}>
-                <NewAccountForm cancelClick={() => setShowDialogNewAccount(false)} displayToast={displayToast} />
-            </Dialog>              
-
-            <Dialog header={itemType === ItemTypeEnum.Ingreso ? `Nuevo Ingreso en ${accountNameSelected}` : `Nuevo Pago en ${accountNameSelected}`} maximizable visible={showDialogPayment} style={{ width: '95%' }} onHide={() => setShowDialogPayment(false)}>
-                <PaymentForm itemType={itemType} cancelClick={() => setShowDialogPayment(false)} displayToast={displayToast} accountId={accountSelected}/>
-            </Dialog>            
+                <AccountForm cancelClick={() => setShowDialogNewAccount(false)} displayToast={displayToast} />
+            </Dialog>
         </>
     )
 }

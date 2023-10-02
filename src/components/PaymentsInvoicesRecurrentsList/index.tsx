@@ -30,10 +30,11 @@ const PaymentsInvoicesRecurrentsList: FC<Props> = ({ listType, itemsList, displa
         <>
             <div style={{height:'100%', overflow:'hidden'}}>
                 <ScrollPanel style={{ width: '100%', height: `${isMobile ? '200px' : '400px'}` }}>
-                    <div className='flex flex-column gap-2'>
+                    <div className='flex flex-column gap-3 p-2'>
                         {itemsList.length > 0 ? 
                             itemsList.map(x => 
                                 <Card
+                                    style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
                                     className='p-2'
                                     key={x.itemId}
                                     variant="bordered"
@@ -56,6 +57,7 @@ const PaymentsInvoicesRecurrentsList: FC<Props> = ({ listType, itemsList, displa
                             )
                         : 
                             <Card
+                                style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
                                 className='p-2'
                                 variant="bordered"
                             >

@@ -36,7 +36,7 @@ function App() {
       {user.userId !== 0 && <AppLayout></AppLayout>}
       <Routes>
         <Route path="/" element={user.userId !== 0 ? <Home userId={user.userId} /> : <Login />} />
-        <Route path="/cuentas" element={<Account />} />
+        <Route path="/cuentas" element={<Account userId={user.userId} />} />
         <Route path="/categorias" element={<Category userId={user.userId}/>} />
         <Route path="/paymentsandinvoices" element={<PaymentsAndInvoices userId={user.userId}/>} />
       </Routes>
