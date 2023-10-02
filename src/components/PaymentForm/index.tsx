@@ -124,7 +124,6 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, acc
     };
 
     const changeCategory = () => {
-        debugger;
         const categoryIdSelected = getValues('categoryId');
         if(categoryIdSelected){
             setSubCategoriesFilterList(subCategoriesList.filter(x => x.categoryId === categoryIdSelected));
