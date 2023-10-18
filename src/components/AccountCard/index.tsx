@@ -25,12 +25,14 @@ const AccountCard: FC<Props> = ({item, displayToast, fullWidth = false}) => {
     const [showDialogPayment, setShowDialogPayment] = useState<boolean>(false);
     const [showDialogNewAccount, setShowDialogNewAccount] = useState<boolean>(false);
     const [itemType, setItemType] = useState<number>();
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;    
 
     return (
     <>
+        
         <StyledCard
-            className={`p-2 ${fullWidth && 'w-12'}`}
-            style={ !fullWidth ? { minWidth: '150px', maxWidth: '200px' } : {}}
+            className={`p-2 w-12`}
+            style={ !fullWidth ? { minWidth: '150px', maxWidth: '200px' } : {width:'100%'}}
             key={item.accountName}
             variant="bordered"
         >
@@ -50,13 +52,27 @@ const AccountCard: FC<Props> = ({item, displayToast, fullWidth = false}) => {
                     </div>
                 </div>
             </Box>
-        </StyledCard>
+        </StyledCard>        
 
-        <Dialog header={itemType === ItemTypeEnum.Ingreso ? `Nuevo Ingreso en ${item.accountName}` : `Nuevo Pago en ${item.accountName}`} maximizable visible={showDialogPayment} style={{ width: '95%' }} onHide={() => setShowDialogPayment(false)}>
+        <Dialog 
+            position="center" 
+            style={ isMobile ? { width: '95%' } : {width:'50%'}} 
+            header={itemType === ItemTypeEnum.Ingreso ? `Nuevo Ingreso en ${item.accountName}` : `Nuevo Pago en ${item.accountName}`} 
+            maximizable 
+            visible={showDialogPayment} 
+            onHide={() => setShowDialogPayment(false)}
+        >
             <PaymentForm itemType={itemType} cancelClick={() => setShowDialogPayment(false)} displayToast={displayToast} accountId={item.accountId}/>
         </Dialog>
 
-        <Dialog header={`Edición cuenta ${item.accountName}`} maximizable visible={showDialogNewAccount} style={{ width: '95%' }} onHide={() => setShowDialogNewAccount(false)}>
+        <Dialog 
+            position="center" 
+            style={ isMobile ? { width: '95%' } : {width:'30%'}} 
+            header={`Edición cuenta ${item.accountName}`} 
+            maximizable 
+            visible={showDialogNewAccount} 
+            onHide={() => setShowDialogNewAccount(false)}
+        >
             <AccountForm account={item} cancelClick={() => setShowDialogNewAccount(false)} displayToast={displayToast} />
         </Dialog>
     </>
