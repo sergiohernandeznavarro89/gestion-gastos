@@ -68,7 +68,14 @@ const PaymentsInvoicesRecurrentsList: FC<Props> = ({ listType, itemsList, displa
                 </ScrollPanel>
             </div>
 
-            <Dialog header={`Edición ${selectedItem?.itemName}`} maximizable visible={showDialogPayment} style={{ width: '95%' }} onHide={() => setShowDialogPayment(false)}>
+            <Dialog 
+                position="center" 
+                style={ isMobile ? { width: '95%' } : {width:'50%'}} 
+                header={`Edición ${selectedItem?.itemName}`} 
+                maximizable 
+                visible={showDialogPayment} 
+                onHide={() => setShowDialogPayment(false)}
+            >
                 <PaymentForm itemType={itemType} cancelClick={() => setShowDialogPayment(false)} displayToast={displayToast} accountId={selectedItem?.accountId} item={selectedItem}/>
             </Dialog>    
         </>

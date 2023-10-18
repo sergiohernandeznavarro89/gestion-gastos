@@ -81,15 +81,16 @@ const Account: FC<Props> = ({userId}) => {
                     </div>
                 </div>
 
-                <div className='flex flex-column gap-3'>
+                <div className='flex flex-row flex-wrap'>
                     {accounts.length > 0 ? accounts.map((item) => (
-                        <AccountCard
-                            key={`account-${item.accountId}`}
-                            displayToast={displayToast}
-                            item={item}
-                            fullWidth
-                        />
-
+                        <div className={`p-2 w-12 md:w-2`}>
+                            <AccountCard
+                                key={`account-${item.accountId}`}
+                                displayToast={displayToast}
+                                item={item}
+                                fullWidth
+                            />
+                        </div>
                     )) : 
                         <Card
                             className='p-2 w-12'

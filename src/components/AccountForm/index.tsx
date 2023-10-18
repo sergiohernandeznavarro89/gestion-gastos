@@ -62,43 +62,45 @@ const AccountForm: FC<Props> = ({ cancelClick, displayToast, account }) => {
     return (
         <>
 
-            <form className='flex flex-column gap-4 w-12' onSubmit={handleSubmit(onSubmit)}>
-                <div className='flex flex-column gap-1'>
-                    <Controller
-                        name="accountName"
-                        control={control}
-                        rules={{ required: 'Nombre es requerido' }}
-                        render={({ field, fieldState }) => (
-                            <>
-                                <label htmlFor={field.name} className={classNames({ 'p-error': errors.accountName })}></label>
-                                <span className="p-float-label">
-                                    <InputText id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.target.value)} />
-                                    <label htmlFor={field.name}>Nombre</label>
-                                </span>
-                                {errors.accountName && <small className="p-error">{errors.accountName.message}</small>}
-                            </>
-                        )}
-                    />                    
-                </div>
+            <form className='flex flex-column gap-4' onSubmit={handleSubmit(onSubmit)}>
+                <div className='formgrid grid'>
+                    <div className='field flex flex-column col-12 md:col-6'>
+                        <Controller
+                            name="accountName"
+                            control={control}
+                            rules={{ required: 'Nombre es requerido' }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.accountName })}></label>
+                                    <span className="p-float-label">
+                                        <InputText id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.target.value)} />
+                                        <label htmlFor={field.name}>Nombre</label>
+                                    </span>
+                                    {errors.accountName && <small className="p-error">{errors.accountName.message}</small>}
+                                </>
+                            )}
+                        />                    
+                    </div>
 
-                <div className='flex flex-column gap-1'>
-                    <Controller
-                        name="ammount"
-                        control={control}
-                        rules={{ required: 'Cantidad es requerido' }}
-                        render={({ field, fieldState }) => (
-                            <>
-                                <label htmlFor={field.name} className={classNames({ 'p-error': errors.ammount })}></label>
-                                <span className="p-float-label">
-                                    <InputNumber suffix=' €' id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.value)} />
-                                    <label htmlFor={field.name}>Cantidad</label>
-                                </span>
-                                {errors.ammount && <small className="p-error">{errors.ammount.message}</small>}
-                            </>
-                        )}
-                    />                    
+                    <div className='field flex flex-column col-12 md:col-6'>
+                        <Controller
+                            name="ammount"
+                            control={control}
+                            rules={{ required: 'Cantidad es requerido' }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.ammount })}></label>
+                                    <span className="p-float-label">
+                                        <InputNumber suffix=' €' id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.value)} />
+                                        <label htmlFor={field.name}>Cantidad</label>
+                                    </span>
+                                    {errors.ammount && <small className="p-error">{errors.ammount.message}</small>}
+                                </>
+                            )}
+                        />                    
+                    </div>
                 </div>
-
+                
                 <div className='flex justify-content-end gap-2'>
                     <Button label="Cancelar" type='button' onClick={cancelClick} severity='danger' raised text size='small' />
                     <Button label="Guardar" severity='info' raised size='small' />

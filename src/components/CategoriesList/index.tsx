@@ -20,6 +20,7 @@ const CategoriesList: FC<Props> = ({ categories, clickCategory, selectedCategory
 
     const [showDialogCategory, setShowDialogCategory] = useState<boolean>(false);    
     const [categoryEdit, setCategoryEdit] = useState<CategoryResponse>();
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;    
 
     return (
         <>            
@@ -47,7 +48,15 @@ const CategoriesList: FC<Props> = ({ categories, clickCategory, selectedCategory
                 </div>
             </div>
 
-            <Dialog header={!categoryEdit ? "Nueva Categoría" : "Editar Categoría"} maximizable visible={showDialogCategory} style={{ width: '95%' }} onHide={() => {setShowDialogCategory(false); setCategoryEdit(undefined)}}>
+            <Dialog 
+                position="center" 
+                style={ isMobile ? { width: '95%' } : {width:'30%'}} 
+                header={!categoryEdit ? "Nueva Categoría" : "Editar Categoría"} 
+                maximizable 
+                visible={showDialogCategory}                 
+                onHide={() => {setShowDialogCategory(false); 
+                    setCategoryEdit(undefined)}}
+            >
                 <CategoryForm cancelClick={() => {setShowDialogCategory(false); setCategoryEdit(undefined)}} displayToast={displayToast} category={categoryEdit}/>
             </Dialog>                 
         </>

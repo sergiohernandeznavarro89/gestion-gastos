@@ -12,8 +12,6 @@ import { Dialog } from 'primereact/dialog';
 
 import AccountForm from 'components/AccountForm';
 import AccountCard from 'components/AccountCard';
-import { classNames } from 'primereact/utils';
-
 
 interface Props {
     accounts: AccountResponse[];
@@ -23,6 +21,7 @@ interface Props {
 const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
 
     const [showDialogNewAccount, setShowDialogNewAccount] = useState<boolean>(false);
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;    
 
     const displayToast = (message: string, severity: string) => {
         if (severity === 'success') {
@@ -90,7 +89,14 @@ const AccountSlider: FC<Props> = ({ accounts, refresh }) => {
                 </div>
             </div>
 
-            <Dialog header="Nueva Cuenta" maximizable visible={showDialogNewAccount} style={{ width: '95%' }} onHide={() => setShowDialogNewAccount(false)}>
+            <Dialog 
+                position="center" 
+                style={ isMobile ? { width: '95%' } : {width:'30%'}} 
+                header="Nueva Cuenta" 
+                maximizable 
+                visible={showDialogNewAccount} 
+                onHide={() => setShowDialogNewAccount(false)}
+            >
                 <AccountForm cancelClick={() => setShowDialogNewAccount(false)} displayToast={displayToast} />
             </Dialog>
         </>

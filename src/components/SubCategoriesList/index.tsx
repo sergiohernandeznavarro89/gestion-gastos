@@ -22,6 +22,7 @@ const SubCategoriesList: FC<Props> = ({ subCategoriesList, selectedCategory, dis
 
     const [showDialogSubCategory, setShowDialogSubCategory] = useState<boolean>(false);
     const [subCategoryEdit, setSubCategoryEdit] = useState<SubCategoryResponse>();
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;    
 
     return (
         <>            
@@ -49,7 +50,14 @@ const SubCategoriesList: FC<Props> = ({ subCategoriesList, selectedCategory, dis
                 </div>
             </div>
 
-            <Dialog header={!subCategoryEdit ? `Nueva Subcategoría de ${selectedCategory?.categoryDesc}` : `Editar Subcategoría de ${selectedCategory?.categoryDesc}`} maximizable visible={showDialogSubCategory} style={{ width: '95%' }} onHide={() => {setShowDialogSubCategory(false); setSubCategoryEdit(undefined)}}>
+            <Dialog 
+                position="center" 
+                style={ isMobile ? { width: '95%' } : {width:'30%'}} 
+                header={!subCategoryEdit ? `Nueva Subcategoría de ${selectedCategory?.categoryDesc}` : `Editar Subcategoría de ${selectedCategory?.categoryDesc}`} 
+                maximizable 
+                visible={showDialogSubCategory} 
+                onHide={() => {setShowDialogSubCategory(false); setSubCategoryEdit(undefined)}}
+            >
                 <SubCategoryForm cancelClick={() => {setShowDialogSubCategory(false); setSubCategoryEdit(undefined)}} displayToast={displayToast} selectedCategory={selectedCategory} subCategory={subCategoryEdit} />            
             </Dialog>              
         </>
