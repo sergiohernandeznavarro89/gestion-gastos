@@ -52,3 +52,6 @@
 .p-tabview-panels{
   padding: .5rem !important;
 }
+.p-connected-overlay-enter-done{
+  top: -44px !important;
+}
