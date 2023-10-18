@@ -38,6 +38,7 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, acc
     const [categoriesList, setCategoriesList] = useState<CategoryResponse[]>([]);
     const [subCategoriesList, setSubCategoriesList] = useState<SubCategoryResponse[]>([]);
     const [subCategoriesFilterList, setSubCategoriesFilterList] = useState<SubCategoryResponse[]>([]);
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;    
 
     useEffect(() => {
         if(item?.categoryId && subCategoriesList.length > 0){
@@ -135,9 +136,9 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, acc
 
     return (
         <>
-            <form className='flex flex-column gap-4 w-12' onSubmit={handleSubmit(onSubmit)}>
-                <div className='flex flex-column gap-3'>
-                    {!item && <div className='flex flex-column gap-2'>
+            <form className='flex flex-column gap-4' onSubmit={handleSubmit(onSubmit)}>                
+                <div className={`flex ${isMobile ? 'flex-column gap-2' : 'flex-row mb-3'}`}>
+                    {!item && <div className={`flex flex-column gap-2 w-12 md:w-6 ${!isMobile && 'align-items-center'}`}>
                         <Text h6 className='m-0' color='primary'>Tipo de cobro</Text>
                         <div className='flex gap-2 flex-wrap'>
                             {periodTypeId === PeriodTypeEnum.Exporadico ? 
@@ -147,177 +148,180 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, acc
                         </div>
                     </div>}
 
-                    {periodTypeId === PeriodTypeEnum.Recurrente && <div className='flex flex-column gap-2'>
+                    {periodTypeId === PeriodTypeEnum.Recurrente && <div className={`flex flex-column gap-2 w-12 md:w-6 ${!isMobile && !item && 'align-items-center'}`}>
                         <Text h6 className='m-0' color='primary'>Tipo de pago</Text>
                         <div className='flex gap-2 flex-wrap'>
                             {ammountTypeId === AmmountTypeEnum.Fijo ? <ButtonTagSelected label='Fijo' rounded type='button'/> : <ButtonTag label='Fijo' rounded onClick={() => setAmmountTypeId(AmmountTypeEnum.Fijo)} type='button'/>}
                             {ammountTypeId === AmmountTypeEnum.Variable ? <ButtonTagSelected label='Variable' rounded type='button'/> : <ButtonTag label='Variable' rounded onClick={() => setAmmountTypeId(AmmountTypeEnum.Variable)} type='button'/>}
                         </div>
-                    </div>}
-                    <Controller                        
-                        name="itemName"
-                        control={control}
-                        rules={{ required: 'Nombre es requerido' }}
-                        render={({ field, fieldState }) => (
-                            <>
-                                <label htmlFor={field.name} className={classNames({ 'p-error': errors.itemName })}></label>
-                                <span className="p-float-label">
-                                    <InputText id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.target.value)} />
-                                    <label htmlFor={field.name}>Nombre</label>
-                                </span>
-                                {errors.itemName && <small className="p-error">{errors.itemName.message}</small>}
-                            </>
-                        )}
-                    />
+                    </div>}                        
                 </div>
-
-                <div className='flex flex-column gap-1'>
-                    <Controller
-                        name="itemDesc"
-                        control={control}                        
-                        render={({ field, fieldState }) => (
-                            <>
-                                <label htmlFor={field.name} className={classNames({ 'p-error': errors.itemDesc })}></label>
-                                <span className="p-float-label">
-                                    <InputText id={field.name} value={field.value} className={`p-inputtext-sm w-full`} onChange={(e) => field.onChange(e.target.value)} />
-                                    <label htmlFor={field.name}>Descripción</label>
-                                </span>                                
-                            </>
-                        )}
-                    />
-                </div>
-
-                {((periodTypeId === PeriodTypeEnum.Exporadico) || (periodTypeId === PeriodTypeEnum.Recurrente && ammountTypeId === AmmountTypeEnum.Fijo )) && 
-                    <div className='flex flex-column gap-1'>
-                        <Controller
-                            name="ammount"
+                <div className='formgrid grid'>
+                    <div className='field flex flex-column col-12 md:col-6'>
+                        <Controller                        
+                            name="itemName"
                             control={control}
-                            rules={{ required: ammountTypeId === AmmountTypeEnum.Fijo && 'Cantidad es requerido' }}
+                            rules={{ required: 'Nombre es requerido' }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.ammount })}></label>
+                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.itemName })}></label>
                                     <span className="p-float-label">
-                                        <InputText prefix=' €' id={field.name} value={field.value} className={`p-inputtext-sm w-full`} onChange={(e) => field.onChange(e.target.value)} />                                        
-                                        <label htmlFor={field.name}>Cantidad</label>
+                                        <InputText id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.target.value)} />
+                                        <label htmlFor={field.name}>Nombre</label>
                                     </span>
-                                    {errors.ammount && <small className="p-error">{errors.ammount.message}</small>}
+                                    {errors.itemName && <small className="p-error">{errors.itemName.message}</small>}
                                 </>
                             )}
-                        />     
+                        />
                     </div>
-                }             
-                
-                {periodTypeId === PeriodTypeEnum.Recurrente && 
-                    <>
-                        <div className='flex flex-column gap-1'>
+
+                    <div className='field flex flex-column col-12 md:col-6'>
+                        <Controller
+                            name="itemDesc"
+                            control={control}                        
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.itemDesc })}></label>
+                                    <span className="p-float-label">
+                                        <InputText id={field.name} value={field.value} className={`p-inputtext-sm w-full`} onChange={(e) => field.onChange(e.target.value)} />
+                                        <label htmlFor={field.name}>Descripción</label>
+                                    </span>                                
+                                </>
+                            )}
+                        />
+                    </div>
+
+                    {((periodTypeId === PeriodTypeEnum.Exporadico) || (periodTypeId === PeriodTypeEnum.Recurrente && ammountTypeId === AmmountTypeEnum.Fijo )) && 
+                        <div className='field flex flex-column col-12 md:col-6'>
                             <Controller
-                                name="periodity"
+                                name="ammount"
                                 control={control}
-                                rules={{ required: periodTypeId === PeriodTypeEnum.Recurrente && 'Periodo es requerido' }}
+                                rules={{ required: ammountTypeId === AmmountTypeEnum.Fijo && 'Cantidad es requerido' }}
                                 render={({ field, fieldState }) => (
                                     <>
-                                        <label htmlFor={field.name} className={classNames({ 'p-error': errors.periodity })}></label>
+                                        <label htmlFor={field.name} className={classNames({ 'p-error': errors.ammount })}></label>
                                         <span className="p-float-label">
-                                            <InputNumber suffix=' Meses' id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.value)} />
-                                            <label htmlFor={field.name}>Periodo</label>
+                                            <InputText prefix=' €' id={field.name} value={field.value} className={`p-inputtext-sm w-full`} onChange={(e) => field.onChange(e.target.value)} />                                        
+                                            <label htmlFor={field.name}>Cantidad</label>
                                         </span>
-                                        {errors.periodity && <small className="p-error">{errors.periodity.message}</small>}
+                                        {errors.ammount && <small className="p-error">{errors.ammount.message}</small>}
                                     </>
                                 )}
                             />     
                         </div>
+                    }             
+                    
+                    {periodTypeId === PeriodTypeEnum.Recurrente && 
+                        <>
+                            <div className='field flex flex-column col-12 md:col-6'>
+                                <Controller
+                                    name="periodity"
+                                    control={control}
+                                    rules={{ required: periodTypeId === PeriodTypeEnum.Recurrente && 'Periodo es requerido' }}
+                                    render={({ field, fieldState }) => (
+                                        <>
+                                            <label htmlFor={field.name} className={classNames({ 'p-error': errors.periodity })}></label>
+                                            <span className="p-float-label">
+                                                <InputNumber suffix=' Meses' id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.value)} />
+                                                <label htmlFor={field.name}>Periodo</label>
+                                            </span>
+                                            {errors.periodity && <small className="p-error">{errors.periodity.message}</small>}
+                                        </>
+                                    )}
+                                />     
+                            </div>
 
-                        <div className='flex flex-column gap-1'>
-                            <Controller
-                                name="startDate"
-                                control={control}
-                                rules={{ required: periodTypeId === PeriodTypeEnum.Recurrente && 'Fecha inicio es requerida' }}
-                                render={({ field, fieldState }) => (
-                                    <>
-                                        <label htmlFor={field.name} className={classNames({ 'p-error': errors.startDate })}></label>
-                                        <span className="p-float-label">
-                                            <Calendar showButtonBar  dateFormat="dd/mm/yy" id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.target.value)} showIcon />
-                                            <label htmlFor={field.name}>Fecha inicio</label>
-                                        </span>
-                                        {errors.startDate && <small className="p-error">{errors.startDate.message}</small>}
-                                    </>
-                                )}
-                            />     
-                        </div>   
+                            <div className='field flex flex-column col-12 md:col-6'>
+                                <Controller
+                                    name="startDate"
+                                    control={control}
+                                    rules={{ required: periodTypeId === PeriodTypeEnum.Recurrente && 'Fecha inicio es requerida' }}
+                                    render={({ field, fieldState }) => (
+                                        <>
+                                            <label htmlFor={field.name} className={classNames({ 'p-error': errors.startDate })}></label>
+                                            <span className="p-float-label">
+                                                <Calendar showButtonBar  dateFormat="dd/mm/yy" id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.target.value)} showIcon />
+                                                <label htmlFor={field.name}>Fecha inicio</label>
+                                            </span>
+                                            {errors.startDate && <small className="p-error">{errors.startDate.message}</small>}
+                                        </>
+                                    )}
+                                />     
+                            </div>   
 
-                        <div className='flex flex-column gap-1'>
-                            <Controller
-                                name="endDate"
-                                control={control}
-                                rules={{ required: periodTypeId === PeriodTypeEnum.Recurrente && 'Fecha fin es requerida' }}
-                                render={({ field, fieldState }) => (
-                                    <>
-                                        <label htmlFor={field.name} className={classNames({ 'p-error': errors.endDate })}></label>
-                                        <span className="p-float-label">
-                                            <Calendar showButtonBar  dateFormat="dd/mm/yy" id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.target.value)} showIcon />
-                                            <label htmlFor={field.name}>Fecha fin</label>
-                                        </span>
-                                        {errors.endDate && <small className="p-error">{errors.endDate.message}</small>}
-                                    </>
-                                )}
-                            />     
-                        </div>                        
-                    </>
-                }
+                            <div className='field flex flex-column col-12 md:col-6'>
+                                <Controller
+                                    name="endDate"
+                                    control={control}
+                                    rules={{ required: periodTypeId === PeriodTypeEnum.Recurrente && 'Fecha fin es requerida' }}
+                                    render={({ field, fieldState }) => (
+                                        <>
+                                            <label htmlFor={field.name} className={classNames({ 'p-error': errors.endDate })}></label>
+                                            <span className="p-float-label">
+                                                <Calendar showButtonBar  dateFormat="dd/mm/yy" id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.target.value)} showIcon />
+                                                <label htmlFor={field.name}>Fecha fin</label>
+                                            </span>
+                                            {errors.endDate && <small className="p-error">{errors.endDate.message}</small>}
+                                        </>
+                                    )}
+                                />     
+                            </div>                        
+                        </>
+                    }
 
-                <div className='flex flex-column gap-1'>
-                    <Controller
-                        name="categoryId"
-                        control={control}
-                        rules={{ required: 'Categoría es requerida' }}
-                        render={({ field, fieldState }) => (
-                            <>
-                                <label htmlFor={field.name} className={classNames({ 'p-error': errors.categoryId })}></label>
-                                <span className="p-float-label">
-                                    <Dropdown appendTo='self' showClear value={field.value} onChange={(e) => {field.onChange(e.target.value); changeCategory()}} options={categoriesList} optionValue='categoryId' optionLabel="categoryDesc" className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
-                                    <label htmlFor={field.name}>Categoría</label>
-                                </span>
-                                {errors.categoryId && <small className="p-error">{errors.categoryId.message}</small>}
-                            </>
-                        )}
-                    />
+                    <div className='field flex flex-column col-12 md:col-6'>
+                        <Controller
+                            name="categoryId"
+                            control={control}
+                            rules={{ required: 'Categoría es requerida' }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.categoryId })}></label>
+                                    <span className="p-float-label">
+                                        <Dropdown appendTo='self' showClear value={field.value} onChange={(e) => {field.onChange(e.target.value); changeCategory()}} options={categoriesList} optionValue='categoryId' optionLabel="categoryDesc" className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+                                        <label htmlFor={field.name}>Categoría</label>
+                                    </span>
+                                    {errors.categoryId && <small className="p-error">{errors.categoryId.message}</small>}
+                                </>
+                            )}
+                        />
+                    </div>
+                    
+                    <div className='field flex flex-column col-12 md:col-6'>
+                        <Controller
+                            name="subCategoryId"
+                            control={control}
+                            render={({ field }) => (
+                                <>
+                                    <label htmlFor={field.name}></label>
+                                    <span className="p-float-label">
+                                        <Dropdown appendTo='self' showClear value={field.value} onChange={(e) => {field.onChange(e.target.value)}} options={subCategoriesFilterList} optionValue='subCategoryId' optionLabel="subCategoryDesc" className={`p-inputtext-sm w-full`} />
+                                        <label htmlFor={field.name}>Subcategoría</label>
+                                    </span>
+                                </>
+                            )}
+                        />
+                    </div>
+                    
+                    {item && <div className='field flex flex-column col-12 md:col-6'>
+                        <Controller
+                            name="accountId"
+                            control={control}
+                            rules={{ required: 'Cuenta es requerida' }}
+                            render={({ field, fieldState }
+                                ) => (
+                                <>
+                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.accountId })}></label>
+                                    <span className="p-float-label">
+                                        <InputText disabled id={field.name} value={item?.accountName} className={`p-inputtext-sm w-full`} />                                        
+                                        <label htmlFor={field.name}>Cuenta</label>
+                                    </span>
+                                    {errors.accountId && <small className="p-error">{errors.accountId.message}</small>}
+                                </>
+                            )}
+                        />
+                    </div>}
                 </div>
-                
-                <div className='flex flex-column gap-1'>
-                    <Controller
-                        name="subCategoryId"
-                        control={control}
-                        render={({ field }) => (
-                            <>
-                                <label htmlFor={field.name}></label>
-                                <span className="p-float-label">
-                                    <Dropdown appendTo='self' showClear value={field.value} onChange={(e) => {field.onChange(e.target.value)}} options={subCategoriesFilterList} optionValue='subCategoryId' optionLabel="subCategoryDesc" className={`p-inputtext-sm w-full`} />
-                                    <label htmlFor={field.name}>Subcategoría</label>
-                                </span>
-                            </>
-                        )}
-                    />
-                </div>
-                
-                {item && <div className='flex flex-column gap-1'>
-                    <Controller
-                        name="accountId"
-                        control={control}
-                        rules={{ required: 'Cuenta es requerida' }}
-                        render={({ field, fieldState }
-                            ) => (
-                            <>
-                                <label htmlFor={field.name} className={classNames({ 'p-error': errors.accountId })}></label>
-                                <span className="p-float-label">
-                                    <InputText disabled id={field.name} value={item?.accountName} className={`p-inputtext-sm w-full`} />                                        
-                                    <label htmlFor={field.name}>Cuenta</label>
-                                </span>
-                                {errors.accountId && <small className="p-error">{errors.accountId.message}</small>}
-                            </>
-                        )}
-                    />
-                </div>}
-
                 <div className='flex justify-content-end gap-2'>
                     <Button label="Cancelar" type='button' onClick={cancelClick} severity='danger' raised text size='small' />
                     <Button label="Guardar" severity='info' raised size='small' />
