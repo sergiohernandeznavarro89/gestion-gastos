@@ -70,13 +70,13 @@ const Login = () => {
                             <Controller
                                 name="email"
                                 control={control}
-                                rules={{ required: 'Email es requerido' }}
+                                rules={{ required: 'Usuario es requerido' }}
                                 render={({ field, fieldState }) => (
                                     <>
                                         <label htmlFor={field.name} className={classNames({ 'p-error': errors.email })}></label>
                                         <span className="p-float-label">
                                             <InputText id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.target.value)} />
-                                            <label htmlFor={field.name}>Email</label>
+                                            <label htmlFor={field.name}>Usuario</label>
                                         </span>
                                         {errors.email && <small className="p-error">{errors.email.message}</small>}
                                     </>
