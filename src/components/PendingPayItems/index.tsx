@@ -212,7 +212,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                     variant="bordered"
                                                 >
                                                      <div className='flex justify-content-between'>
-                                                     <div className='flex gap-2'>
+                                                        <div className='flex gap-2'>
                                                             {x.itemTypeId === ItemTypeEnum.Gasto ? <ArrowUpIcon style={{color:'red'}}/> : <ArrowDownIcon style={{color:'green'}}/>}
                                                             <Text h5 className='m-0' color='primary' >{x.itemName}</Text>
                                                         </div>                                                        <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date().getMonth() + 2}-${new Date().getFullYear()}`}</Text>

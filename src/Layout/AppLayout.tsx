@@ -30,13 +30,18 @@ const AppLayout = () => {
         },
         {
             name: "Pagos/Ingresos",
-            path: "/paymentsandinvoices",
+            path: "/pagos-cobros",
             idx: 2
         },
         {
             name: "Categorias",
             path: "/categorias",
             idx: 3
+        },
+        {
+            name: "Deudas",
+            path: "/Deudas",
+            idx: 4
         },
     ];
 

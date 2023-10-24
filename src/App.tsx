@@ -13,6 +13,7 @@ import AppLayout from 'Layout/AppLayout';
 import Account from 'pages/account';
 import Category from 'pages/category';
 import PaymentsAndInvoices from 'pages/paymentsAndInvoices';
+import Debt from 'pages/debt';
 
 
 function App() {
@@ -38,7 +39,8 @@ function App() {
         <Route path="/" element={user.userId !== 0 ? <Home userId={user.userId} /> : <Login />} />
         <Route path="/cuentas" element={<Account userId={user.userId} />} />
         <Route path="/categorias" element={<Category userId={user.userId}/>} />
-        <Route path="/paymentsandinvoices" element={<PaymentsAndInvoices userId={user.userId}/>} />
+        <Route path="/pagos-cobros" element={<PaymentsAndInvoices userId={user.userId}/>} />
+        <Route path="/deudas" element={<Debt userId={user.userId}/>} />
       </Routes>
     </>
   );
