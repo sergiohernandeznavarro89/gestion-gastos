@@ -13,6 +13,8 @@ import AddIcon from '@mui/icons-material/Add';
 import DebtCard from 'components/DebtCard';
 import { Dialog } from 'primereact/dialog';
 import DebtForm from 'components/DebtForm';
+import { GetAccountsByUser } from 'services/account/AccountService';
+import { AccountResponse } from 'models/account/AccountResponse';
 
 
 interface Props {
@@ -26,6 +28,7 @@ const Debt: FC<Props> = ({ userId }) => {
     const [refresh, setRefresh] = useState<boolean>(false);    
     const [loading, setLoading] = useState<boolean>(false);
     const [debtList, setDebtList] = useState<DebtResponse[]>([]);
+    const [accountList, setAccountList] = useState<AccountResponse[]>([]);
     const isMobile = window.matchMedia('(max-width: 768px)').matches;    
     const [showDialogDebt, setShowDialogDebt] = useState<boolean>(false);
 
@@ -40,11 +43,14 @@ const Debt: FC<Props> = ({ userId }) => {
             setLoading(true);
             (async () => {
                 const [
+                    accountsResponse,
                     debtsResponse
                 ] = await Promise.all([
+                    GetAccountsByUser(userId),
                     GetAllDebts(userId)                    
                 ]);
-                
+
+                setAccountList(accountsResponse);
                 setDebtList(debtsResponse);                
 
                 setLoading(false);
@@ -92,9 +98,10 @@ const Debt: FC<Props> = ({ userId }) => {
                         {debtList.length > 0 ? 
                             debtList.map(x => 
                                 <DebtCard
-                                    debt={x}
-                                    displayToast={displayToast}
                                     key={`debt-${x.debtId}`}
+                                    debt={x}
+                                    accountList = {accountList}
+                                    displayToast={displayToast}
                                 />
                             )
                         : 

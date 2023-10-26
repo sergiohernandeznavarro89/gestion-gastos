@@ -10,20 +10,20 @@ import PersonIcon from '@mui/icons-material/PersonOutlineOutlined';
 import { Dialog } from 'primereact/dialog';
 import DebtForm from "components/DebtForm";
 import EditIcon from '@mui/icons-material/CreateOutlined';
+import { AccountResponse } from "models/account/AccountResponse";
+import ReduceDebtForm from "components/ReduceDebtForm";
 
 interface Props{
     debt: DebtResponse;
     displayToast: (message: string, severity: string) => void;
+    accountList: AccountResponse[];
 }
 
-const DebtCard: FC<Props> = ({debt, displayToast}) => {    
+const DebtCard: FC<Props> = ({debt, displayToast, accountList}) => {    
 
     const isMobile = window.matchMedia('(max-width: 768px)').matches;    
     const [showDialogDebt, setShowDialogDebt] = useState<boolean>(false);
-
-    const payButtonClick = (debtId: number) => {
-        setShowDialogDebt(true);
-    }
+    const [showDialogReduceDebt, setShowDialogReduceDebt] = useState<boolean>(false);    
 
     return (
     <>        
@@ -60,7 +60,7 @@ const DebtCard: FC<Props> = ({debt, displayToast}) => {
                         </div>                                                                                  
                     </div>
                     <div className='flex' style={{height:'fit-content'}}>
-                        <Button label="Reducir deuda" rounded onClick={() => payButtonClick(debt.debtId)}/>
+                        <Button label="Reducir deuda" rounded onClick={() => setShowDialogReduceDebt(true)}/>
                     </div>
                 </div>                                        
             </Card>  
@@ -69,7 +69,7 @@ const DebtCard: FC<Props> = ({debt, displayToast}) => {
             <Dialog 
                 position="center" 
                 style={ isMobile ? { width: '95%' } : {width:'50%'}} 
-                header={'Nueva Deuda'} 
+                header={`Editar Deuda ${debt.debtName}`} 
                 maximizable 
                 visible={showDialogDebt} 
                 onHide={() => setShowDialogDebt(false)}
@@ -78,6 +78,22 @@ const DebtCard: FC<Props> = ({debt, displayToast}) => {
                     cancelClick={() => setShowDialogDebt(false)}
                     displayToast={displayToast}
                     debt={debt}
+                />
+            </Dialog>            
+            
+            <Dialog 
+                position="center" 
+                style={ isMobile ? { width: '95%' } : {width:'50%'}} 
+                header={`Reducir ${debt.debtName}`} 
+                maximizable 
+                visible={showDialogReduceDebt} 
+                onHide={() => setShowDialogReduceDebt(false)}
+            >
+                <ReduceDebtForm
+                    accountList={accountList}
+                    cancelClick={() => setShowDialogReduceDebt(false)}
+                    debt={debt}
+                    displayToast={displayToast}
                 />
             </Dialog>            
         </div>
