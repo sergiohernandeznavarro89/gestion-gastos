@@ -15,6 +15,7 @@ import { Dialog } from 'primereact/dialog';
 import DebtForm from 'components/DebtForm';
 import { GetAccountsByUser } from 'services/account/AccountService';
 import { AccountResponse } from 'models/account/AccountResponse';
+import { TabPanel, TabView } from 'primereact/tabview';
 
 
 interface Props {
@@ -28,6 +29,8 @@ const Debt: FC<Props> = ({ userId }) => {
     const [refresh, setRefresh] = useState<boolean>(false);    
     const [loading, setLoading] = useState<boolean>(false);
     const [debtList, setDebtList] = useState<DebtResponse[]>([]);
+    const [pendingDebtList, setPendingDebtList] = useState<DebtResponse[]>([]);
+    const [completedDebtList, setCompletedDebtList] = useState<DebtResponse[]>([]);
     const [accountList, setAccountList] = useState<AccountResponse[]>([]);
     const isMobile = window.matchMedia('(max-width: 768px)').matches;    
     const [showDialogDebt, setShowDialogDebt] = useState<boolean>(false);
@@ -56,7 +59,18 @@ const Debt: FC<Props> = ({ userId }) => {
                 setLoading(false);
             })();
         }
-    }, [userId, refresh]);       
+    }, [userId, refresh]);
+
+    useEffect(() => {
+      if(debtList.length > 0){
+        const pendingDebts = debtList.filter(x => x.currentAmount > 0);
+        const completedDebts = debtList.filter(x => x.currentAmount === 0);
+
+        setCompletedDebtList(completedDebts);
+        setPendingDebtList(pendingDebts);
+      }          
+    }, [debtList])
+    
 
     const displayToast = (message: string, severity: string) => {
         if (severity === 'success') {
@@ -93,17 +107,34 @@ const Debt: FC<Props> = ({ userId }) => {
                             <Button icon={<AddIcon />} className='p-0 pt-1' style={{ height: 'fit-content' }} rounded text onClick={() => setShowDialogDebt(true)} />
                         </div>
                     </div>
-
-                    <div className='flex w-12 formgrid grid'>
+                    
                         {debtList.length > 0 ? 
-                            debtList.map(x => 
-                                <DebtCard
-                                    key={`debt-${x.debtId}`}
-                                    debt={x}
-                                    accountList = {accountList}
-                                    displayToast={displayToast}
-                                />
-                            )
+                            <TabView>
+                                <TabPanel header="Pendientes">
+                                    <div className='flex w-12 formgrid grid'>
+                                        {pendingDebtList.map(x => 
+                                            <DebtCard
+                                                key={`debt-${x.debtId}`}
+                                                debt={x}
+                                                accountList = {accountList}
+                                                displayToast={displayToast}
+                                            />
+                                        )}
+                                    </div>
+                                </TabPanel>
+                                <TabPanel header="Completadas">
+                                    <div className='flex w-12 formgrid grid'>
+                                        {completedDebtList.map(x => 
+                                            <DebtCard
+                                                key={`debt-${x.debtId}`}
+                                                debt={x}
+                                                accountList = {accountList}
+                                                displayToast={displayToast}
+                                            />
+                                        )}
+                                    </div>
+                                </TabPanel>
+                            </TabView>                           
                         : 
                             <Card
                                 style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
@@ -113,7 +144,6 @@ const Debt: FC<Props> = ({ userId }) => {
                                 No existen deudas que mostrar
                             </Card>
                         }
-                    </div>
                 </div>                    
             </div>    
 
