@@ -12,6 +12,7 @@ import DebtForm from "components/DebtForm";
 import EditIcon from '@mui/icons-material/CreateOutlined';
 import { AccountResponse } from "models/account/AccountResponse";
 import ReduceDebtForm from "components/ReduceDebtForm";
+import { EventBus } from "primereact/utils";
 
 interface Props{
     debt: DebtResponse;
@@ -39,14 +40,20 @@ const DebtCard: FC<Props> = ({debt, displayToast, accountList}) => {
                         <div className='flex gap-2 align-items-center'>
                             {debt.debtTypeId === DebtTypeEnum.Saliente ? <ArrowUpIcon style={{color:'red'}}/> : <ArrowDownIcon style={{color:'green'}}/>}
                             <Text h5 className='m-0' color='primary' >{debt.debtName}</Text>
-                            <Button icon={<EditIcon />} className='p-0 pt-1' style={{ height: 'fit-content', width:'2rem' }} rounded link onClick={() => setShowDialogDebt(true)}/>                                                
+                            {debt.currentAmount !== 0 && <Button icon={<EditIcon />} className='p-0 pt-1' style={{ height: 'fit-content', width:'2rem' }} rounded link onClick={() => setShowDialogDebt(true)}/>}
                         </div>
                         <div className='flex flex-row gap-1'>
                             <PersonIcon style={debt.debtTypeId === DebtTypeEnum.Saliente ? {color: 'red'} : {color: 'green'}}/>
                             <Text h5 className='m-0' color='primary' >{debt.debtorName}</Text>
                         </div>   
                     </div>
-                    <Text h5 className='m-0' color='primary' >{`${new Date(debt.date).getDate()}-${new Date(debt.date).getMonth() + 1}-${new Date(debt.date).getFullYear()}`}</Text>
+                    <Text h5 className='m-0' color={`${debt.currentAmount > 0 ? 'primary' : 'green'}`} >
+                        {debt.currentAmount > 0 ? 
+                            `${new Date(debt.date).getDate()}-${new Date(debt.date).getMonth() + 1}-${new Date(debt.date).getFullYear()}` 
+                        :
+                            debt.completedDate && `${new Date(debt.completedDate).getDate()}-${new Date(debt.completedDate).getMonth() + 1}-${new Date(debt.completedDate).getFullYear()}`
+                        }
+                    </Text>
                 </div>
                 <div className='flex flex-row justify-content-between align-items-center'>
                     <div className='flex flex-column mt-2'>                                        
@@ -56,7 +63,7 @@ const DebtCard: FC<Props> = ({debt, displayToast, accountList}) => {
                         </div>                         
                         <div className='flex flex-row gap-1'>
                             <Text h5 className='m-0' >Deuda actual:</Text>
-                            <Text h5 className='m-0' color='red' >{debt.currentAmount} €</Text>
+                            <Text h5 className='m-0' color={`${debt.currentAmount === 0 ? 'green' : 'red'}`} >{debt.currentAmount} €</Text>
                         </div>                                                                                  
                     </div>
                     <div className='flex' style={{height:'fit-content'}}>
