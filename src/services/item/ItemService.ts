@@ -4,7 +4,7 @@ import { ItemResponse } from "models/item/ItemResponse";
 import { PendingPayItemsResponse } from "models/item/PendingPayItemResponse";
 import { UpdateItemCommand } from "models/item/UpdateItemCommand";
 
-const API = "https://sergiohn89.bsite.net";
+const API = process.env.REACT_APP_API_BASE_URL;
 
 export const GetPendingPayItems = async (userId: number): Promise<PendingPayItemsResponse[]> => {
     const response = await axios.get<PendingPayItemsResponse[]>(`${API}/api/Item/GetPendingPayItems?userId=${userId}`);

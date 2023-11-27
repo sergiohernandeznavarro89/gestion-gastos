@@ -3,7 +3,7 @@ import { AddCategoryCommand } from "models/category/AddCategoryCommand";
 import { CategoryResponse } from "models/category/CategoryResponse";
 import { UpdateCategoryCommand } from "models/category/UpdateCategoryCommand";
 
-const API = "https://sergiohn89.bsite.net";
+const API = process.env.REACT_APP_API_BASE_URL;
 
 export const GetCategoriesByUser = async (userId: number): Promise<CategoryResponse[]> => {
     const response = await axios.get<CategoryResponse[]>(`${API}/api/Category/GetCategoriesByUser?userId=${userId}`);

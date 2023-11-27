@@ -3,7 +3,7 @@ import { AddDebtCommand } from "models/debt/AddDebtCommand";
 import { DebtResponse } from "models/debt/DebtResponse";
 import { UpdateDebtCommand } from "models/debt/UpdateDebtCommand";
 
-const API = "https://sergiohn89.bsite.net"
+const API = process.env.REACT_APP_API_BASE_URL;
 
 export const GetAllDebts = async (userId: number): Promise<DebtResponse[]> => {
     const response = await axios.get<DebtResponse[]>(`${API}/api/Debt/GetAllDebts?userId=${userId}`);
