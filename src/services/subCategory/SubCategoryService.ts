@@ -3,7 +3,7 @@ import { AddSubCategoryCommand } from "models/subCategory/AddSubCategoryCommand"
 import { SubCategoryResponse } from "models/subCategory/SubCategoryResponse";
 import { UpdateSubCategoryCommand } from "models/subCategory/UpdateSubCategoryCommand";
 
-const API = "https://sergiohn89.bsite.net";
+const API = process.env.REACT_APP_API_BASE_URL;
 
 export const GetSubCategoriesByUser = async (userId: number): Promise<SubCategoryResponse[]> => {
     const response = await axios.get<SubCategoryResponse[]>(`${API}/api/SubCategory/GetSubCategoriesByUser?userId=${userId}`);

@@ -3,7 +3,7 @@ import { AccountResponse } from "models/account/AccountResponse";
 import { AddAccountCommand } from "models/account/AddAccountCommand";
 import { UpdateAccountCommand } from "models/account/UpdateAccountCommand";
 
-const API = "https://sergiohn89.bsite.net";
+const API = process.env.REACT_APP_API_BASE_URL;
 
 export const GetAccountsByUser = async (userId: number): Promise<AccountResponse[]> => {
     const response = await axios.get<AccountResponse[]>(`${API}/api/Account/GetAccountsByUser?userId=${userId}`);
