@@ -2,7 +2,7 @@ import axios from "axios";
 import { AddDebtPaymentCommand } from "models/debtPayment/AddDebtPaymentCommand";
 import { DebtPaymentResponse } from "models/debtPayment/DebtPaymentResponse";
 
-const API = "https://sergiohn89.bsite.net";
+const API = process.env.REACT_APP_API_BASE_URL;
 
 export const AddDebtPayment = async (debtPayment: AddDebtPaymentCommand) : Promise<DebtPaymentResponse> => {    
     const body = JSON.stringify(debtPayment);
