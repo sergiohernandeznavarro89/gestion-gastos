@@ -3,6 +3,7 @@ import { AddItemCommand } from "models/item/AddItemCommand";
 import { ItemResponse } from "models/item/ItemResponse";
 import { PendingPayItemsResponse } from "models/item/PendingPayItemResponse";
 import { UpdateItemCommand } from "models/item/UpdateItemCommand";
+import { ResponseBase } from "models/shared/ResponseBase";
 
 const API = process.env.REACT_APP_API_BASE_URL;
 
@@ -38,5 +39,10 @@ export const UpdateItem = async (item: UpdateItemCommand) => {
             'Content-Type': 'application/json'
         }
     });
+    return response.data;
+}
+
+export const DeleteItem = async (itemId: number): Promise<ResponseBase> => {
+    const response = await axios.delete(`${API}/api/Item/DeleteItem/${itemId}`);
     return response.data;
 }

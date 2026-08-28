@@ -1,9 +1,13 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ScrollPanel } from 'primereact/scrollpanel';
 import { Card, Text } from '@nextui-org/react';
 import { AmmountTypeEnum } from 'enums/AmmountTypeEnum';
 import { ItemResponse } from 'models/item/ItemResponse';
+import { DeleteItem } from 'services/item/ItemService';
+import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
 
 type listType = 'payment' | 'invoice';
 
@@ -14,11 +18,36 @@ interface ItemsGroupedByMonthYear {
 interface Props {
     listType: listType;
     itemsList: ItemsGroupedByMonthYear;
+    displayToast: (message: string, severity: string) => void;
 };
 
-const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList }) => {
+const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList, displayToast }) => {
     const user = useSelector((state: any) => state.userState);    
     const isMobile = window.matchMedia('(max-width: 768px)').matches;    
+    const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
+    const [itemToDelete, setItemToDelete] = useState<number>();
+
+    const handleDeleteClick = (itemId: number) => {
+        setItemToDelete(itemId);
+        setShowDeleteDialog(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!itemToDelete) return;
+        try {
+            const response = await DeleteItem(itemToDelete);
+            if (response.success) {
+                displayToast(response.message, 'success');
+            } else {
+                displayToast(response.message, 'error');
+            }
+        } catch (error: any) {
+            displayToast("Ocurrió un error al borrar el ítem", 'error');
+        } finally {
+            setShowDeleteDialog(false);
+            setItemToDelete(undefined);
+        }
+    };
 
     const getTotalAmmounts = (items: ItemResponse[] ): number => {
         let suma: number = 0;
@@ -58,8 +87,12 @@ const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList }) => {
                                         </div>
                                         <div className='flex gap-2 justify-content-between align-items-center'>
                                             <div className='flex flex-column'>                                                            
+                                                <Text h6 className='m-0' color="secondary" >{item.accountName}</Text>
                                                 <Text h6 className='m-0' >{item.itemDesc}</Text>                                                    
                                                 <Text h5 className='mt-2' color={listType === 'payment' ? 'red' : 'green'}>{item.ammountTypeId !== AmmountTypeEnum.Variable ? `${item.ammount} €` : listType === 'payment' ? 'Pago Variable' : 'Ingreso Variable'}</Text>
+                                            </div>
+                                            <div className='flex flex-row gap-1'>
+                                                <Button icon={<DeleteIcon />} className='p-0 pt-1' style={{ color:'red', height: 'fit-content', width:'2rem' }} rounded link onClick={() => handleDeleteClick(item.itemId)} />
                                             </div>                                                
                                         </div>
                                     </Card>
@@ -78,6 +111,23 @@ const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList }) => {
                     </div>
                 </ScrollPanel>
             </div>
+
+            <Dialog 
+                position="center" 
+                style={ isMobile ? { width: '95%' } : {width:'30%'}} 
+                header="Confirmar Borrado"
+                maximizable={false}
+                visible={showDeleteDialog} 
+                onHide={() => setShowDeleteDialog(false)}
+            >
+                <div className="flex flex-column gap-3">
+                    <Text>¿Estás seguro de que quieres borrar este registro?</Text>
+                    <div className="flex justify-content-end gap-2">
+                        <Button label="Cancelar" icon="pi pi-times" onClick={() => setShowDeleteDialog(false)} className="p-button-text" />
+                        <Button label="Borrar" icon="pi pi-check" onClick={handleDeleteConfirm} autoFocus severity="danger" />
+                    </div>
+                </div>
+            </Dialog>
         </>
     )
 }

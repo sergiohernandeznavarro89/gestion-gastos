@@ -97,7 +97,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                 <div style={{height:'100%', overflow:'hidden'}}>
                                     <ScrollPanel style={{ width: '100%', height: '400px' }}>
                                         <div className='flex flex-column gap-3 p-2'>
-                                            {pendingPayItemsAux.map(x => (                                                
+                                            {pendingPayItemsAux.length > 0 ? pendingPayItemsAux.map(x => (                                                
                                                 <Card             
                                                     style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}                                   
                                                     className='p-2'
@@ -113,6 +113,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                     </div>
                                                     <div className='flex gap-2 justify-content-between align-items-center'>
                                                         <div className='flex flex-column'>                                                            
+                                                            <Text h6 className='m-0' color="secondary" >{x.accountName}</Text>
                                                             <Text h6 className='m-0' >{x.itemDesc}</Text>
                                                             {x.ammountTypeId !== AmmountTypeEnum.Variable ? 
                                                                 <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammount} €</Text>
@@ -125,7 +126,15 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                         </div>
                                                     </div>
                                                 </Card>                            
-                                            ))}                        
+                                            )) : (
+                                                <Card
+                                                    style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
+                                                    className='p-2'
+                                                    variant="bordered"
+                                                >
+                                                    No existen gastos ni ingresos pendientes que mostrar
+                                                </Card>
+                                            )}                        
                                         </div>
                                     </ScrollPanel>
                                 </div>
@@ -134,7 +143,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                 <div style={{height:'100%', overflow:'hidden'}}>
                                 <ScrollPanel style={{ width: '100%', height: '400px' }}>
                                         <div className='flex flex-column gap-3 p-2'>
-                                            {pendingPayItemsNextMonth.map(x => (
+                                            {pendingPayItemsNextMonth.length > 0 ? pendingPayItemsNextMonth.map(x => (
                                                 <Card
                                                     style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
                                                     className='p-2'
@@ -150,12 +159,21 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                     </div>
                                                     <div className='flex gap-2 justify-content-center align-items-center'>
                                                         <div className='flex flex-column w-12'>
+                                                            <Text h6 className='m-0' color="secondary" >{x.accountName}</Text>
                                                             <Text h6 className='m-0' >{x.itemDesc}</Text>
                                                             <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammountTypeId === AmmountTypeEnum.Variable ? 'Importe Variable' : `${x.ammount} €`}</Text>
                                                         </div>                                                            
                                                     </div>
                                                 </Card>                            
-                                            ))}                        
+                                            )) : (
+                                                <Card
+                                                    style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
+                                                    className='p-2'
+                                                    variant="bordered"
+                                                >
+                                                    No existen gastos ni ingresos pendientes que mostrar
+                                                </Card>
+                                            )}                        
                                         </div>
                                     </ScrollPanel>
                                 </div>
@@ -168,7 +186,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                 <div style={{height:'100%', overflow:'hidden'}}>
                                     <ScrollPanel style={{ width: '100%', height: '400px' }}>
                                         <div className='flex flex-column gap-3 p-2'>
-                                            {pendingPayItemsAux.map(x => (
+                                            {pendingPayItemsAux.length > 0 ? pendingPayItemsAux.map(x => (
                                                 <Card
                                                     style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
                                                     className='p-2'
@@ -183,6 +201,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                     </div>
                                                     <div className='flex gap-2 justify-content-between align-items-center'>
                                                         <div className='flex flex-column'>                                                            
+                                                            <Text h6 className='m-0' color="secondary" >{x.accountName}</Text>
                                                             <Text h6 className='m-0' >{x.itemDesc}</Text>
                                                             {x.ammountTypeId !== AmmountTypeEnum.Variable ? 
                                                                 <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammount} €</Text>
@@ -194,7 +213,15 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                         </div>
                                                     </div>
                                                 </Card>                            
-                                            ))}                        
+                                            )) : (
+                                                <Card
+                                                    style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
+                                                    className='p-2'
+                                                    variant="bordered"
+                                                >
+                                                    No existen gastos ni ingresos pendientes que mostrar
+                                                </Card>
+                                            )}                        
                                         </div>
                                     </ScrollPanel>
                                 </div>
@@ -204,7 +231,7 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                 <div style={{height:'100%', overflow:'hidden'}}>
                                     <ScrollPanel style={{ width: '100%', height: '400px' }}>
                                         <div className='flex flex-column gap-3 p-2'>
-                                            {pendingPayItemsNextMonth.map(x => (
+                                            {pendingPayItemsNextMonth.length > 0 ? pendingPayItemsNextMonth.map(x => (
                                                 <Card
                                                     style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
                                                     className='p-2'
@@ -219,12 +246,21 @@ const PendingPayItems: FC<Props> = ({ refresh, pendingPayItems, pendingPayItemsN
                                                     </div>
                                                     <div className='flex gap-2 justify-content-center align-items-center'>                                                        
                                                         <div className='flex flex-column w-12'>                                                          
+                                                            <Text h6 className='m-0' color="secondary" >{x.accountName}</Text>
                                                             <Text h6 className='m-0' >{x.itemDesc}</Text>
                                                             <Text h5 className='mt-2' color={x.itemTypeId === ItemTypeEnum.Gasto ? 'red' : 'green'}>{x.ammountTypeId === AmmountTypeEnum.Variable ? 'Importe Variable' : `${x.ammount} €`}</Text>
                                                         </div>                                                            
                                                     </div>
                                                 </Card>                            
-                                            ))}                        
+                                            )) : (
+                                                <Card
+                                                    style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
+                                                    className='p-2'
+                                                    variant="bordered"
+                                                >
+                                                    No existen gastos ni ingresos pendientes que mostrar
+                                                </Card>
+                                            )}                        
                                         </div>
                                     </ScrollPanel>
                                 </div>

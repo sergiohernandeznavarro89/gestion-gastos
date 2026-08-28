@@ -10,6 +10,8 @@ import EditIcon from '@mui/icons-material/CreateOutlined';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SubCategoryForm from 'components/SubCategoryForm';
 
+import { DeleteSubCategory } from 'services/subCategory/SubCategoryService';
+
 interface Props {
     subCategoriesList: SubCategoryResponse[];    
     selectedCategory: CategoryResponse | undefined;
@@ -22,7 +24,28 @@ const SubCategoriesList: FC<Props> = ({ subCategoriesList, selectedCategory, dis
 
     const [showDialogSubCategory, setShowDialogSubCategory] = useState<boolean>(false);
     const [subCategoryEdit, setSubCategoryEdit] = useState<SubCategoryResponse>();
+    const [showDeleteDialogSubCategory, setShowDeleteDialogSubCategory] = useState<boolean>(false);
     const isMobile = window.matchMedia('(max-width: 768px)').matches;    
+
+    const handleDeleteClick = () => {
+        setShowDeleteDialogSubCategory(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!selectedSubCategory) return;
+        try {
+            const response = await DeleteSubCategory(selectedSubCategory.subCategoryId);
+            if (response.success) {
+                displayToast(response.message, 'success');
+            } else {
+                displayToast(response.message, 'error');
+            }
+        } catch (error: any) {
+            displayToast("Ocurrió un error al borrar la subcategoría", 'error');
+        } finally {
+            setShowDeleteDialogSubCategory(false);
+        }
+    };
 
     return (
         <>            
@@ -32,8 +55,8 @@ const SubCategoriesList: FC<Props> = ({ subCategoriesList, selectedCategory, dis
                         <Text h4 className='m-0' color='primary' >Subcategorías de {selectedCategory?.categoryDesc}</Text>
                         <div className='flex'>
                             <Button icon={<AddIcon />} className='p-0 pt-1' style={{ height: 'fit-content', width:'2rem' }} rounded link onClick={() => setShowDialogSubCategory(true)} />                            
-                            <Button icon={<DeleteIcon />} className='p-0 pt-1' style={{ color:'red', height: 'fit-content', width:'2rem' }} rounded link />
-                            <Button icon={<EditIcon />} className='p-0 pt-1' style={{ height: 'fit-content', width:'2rem' }} rounded link onClick={() => {setShowDialogSubCategory(true); setSubCategoryEdit(selectedSubCategory)}} />
+                            <Button disabled={!selectedSubCategory} icon={<DeleteIcon />} className='p-0 pt-1' style={{ color:'red', height: 'fit-content', width:'2rem' }} rounded link onClick={handleDeleteClick} />
+                            <Button disabled={!selectedSubCategory} icon={<EditIcon />} className='p-0 pt-1' style={{ height: 'fit-content', width:'2rem' }} rounded link onClick={() => {setShowDialogSubCategory(true); setSubCategoryEdit(selectedSubCategory)}} />
 
                         </div>
                     </div>
@@ -60,6 +83,23 @@ const SubCategoriesList: FC<Props> = ({ subCategoriesList, selectedCategory, dis
             >
                 <SubCategoryForm cancelClick={() => {setShowDialogSubCategory(false); setSubCategoryEdit(undefined)}} displayToast={displayToast} selectedCategory={selectedCategory} subCategory={subCategoryEdit} />            
             </Dialog>              
+
+            <Dialog 
+                position="center" 
+                style={ isMobile ? { width: '95%' } : {width:'30%'}} 
+                header="Confirmar Borrado"
+                maximizable={false}
+                visible={showDeleteDialogSubCategory} 
+                onHide={() => setShowDeleteDialogSubCategory(false)}
+            >
+                <div className="flex flex-column gap-3">
+                    <Text>¿Estás seguro de que quieres borrar esta subcategoría?</Text>
+                    <div className="flex justify-content-end gap-2">
+                        <Button label="Cancelar" icon="pi pi-times" onClick={() => setShowDeleteDialogSubCategory(false)} className="p-button-text" />
+                        <Button label="Borrar" icon="pi pi-check" onClick={handleDeleteConfirm} autoFocus severity="danger" />
+                    </div>
+                </div>
+            </Dialog> 
         </>
     )
 }
