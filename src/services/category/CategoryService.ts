@@ -2,6 +2,7 @@ import axios from "axios";
 import { AddCategoryCommand } from "models/category/AddCategoryCommand";
 import { CategoryResponse } from "models/category/CategoryResponse";
 import { UpdateCategoryCommand } from "models/category/UpdateCategoryCommand";
+import { ResponseBase } from "models/shared/ResponseBase";
 
 const API = process.env.REACT_APP_API_BASE_URL;
 
@@ -27,5 +28,10 @@ export const UpdateCategory = async (category: UpdateCategoryCommand) => {
             'Content-Type': 'application/json'
         }
     });
+    return response.data;
+}
+
+export const DeleteCategory = async (categoryId: number): Promise<ResponseBase> => {
+    const response = await axios.delete(`${API}/api/Category/DeleteCategory?categoryId=${categoryId}`);
     return response.data;
 }

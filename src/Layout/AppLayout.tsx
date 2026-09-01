@@ -43,6 +43,11 @@ const AppLayout = () => {
             path: "/Deudas",
             idx: 4
         },
+        {
+            name: "Transferencias",
+            path: "/transferencias",
+            idx: 6
+        }
     ];
 
     const logoutClick = () => {

@@ -2,6 +2,7 @@ import axios from "axios";
 import { AccountResponse } from "models/account/AccountResponse";
 import { AddAccountCommand } from "models/account/AddAccountCommand";
 import { UpdateAccountCommand } from "models/account/UpdateAccountCommand";
+import { ResponseBase } from "models/shared/ResponseBase";
 
 const API = process.env.REACT_APP_API_BASE_URL;
 
@@ -27,5 +28,10 @@ export const UpdateAccount = async (account: UpdateAccountCommand) => {
             'Content-Type': 'application/json'
         }
     });
+    return response.data;
+}
+
+export const DeleteAccount = async (accountId: number): Promise<ResponseBase> => {
+    const response = await axios.delete(`${API}/api/Account/DeleteAccount?accountId=${accountId}`);
     return response.data;
 }

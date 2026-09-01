@@ -1,55 +1,51 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ScrollPanel } from 'primereact/scrollpanel';
 import { Card, Text } from '@nextui-org/react';
-import { AmmountTypeEnum } from 'enums/AmmountTypeEnum';
-import { ItemResponse } from 'models/item/ItemResponse';
-import { DeleteItem } from 'services/item/ItemService';
+import { TransferResponse } from 'models/transfer/TransferResponse';
+import { DeleteTransfer } from 'services/transfer/TransferService';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 
-type listType = 'payment' | 'invoice';
-
-interface ItemsGroupedByMonthYear {
-    [key: string]: ItemResponse[];
+interface TransfersGroupedByMonthYear {
+    [key: string]: TransferResponse[];
 }
 
 interface Props {
-    listType: listType;
-    itemsList: ItemsGroupedByMonthYear;
+    itemsList: TransfersGroupedByMonthYear;
     displayToast: (message: string, severity: string) => void;
 };
 
-const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList, displayToast }) => {
-    const user = useSelector((state: any) => state.userState);    
+const TransferSporadicList: FC<Props> = ({ itemsList, displayToast }) => {
     const isMobile = window.matchMedia('(max-width: 768px)').matches;    
     const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
     const [itemToDelete, setItemToDelete] = useState<number>();
 
-    const handleDeleteClick = (itemId: number) => {
-        setItemToDelete(itemId);
+    const handleDeleteClick = (transferId: number) => {
+        setItemToDelete(transferId);
         setShowDeleteDialog(true);
     };
 
     const handleDeleteConfirm = async () => {
         if (!itemToDelete) return;
         try {
-            const response = await DeleteItem(itemToDelete);
+            const response = await DeleteTransfer(itemToDelete);
             if (response.success) {
                 displayToast(response.message, 'success');
             } else {
                 displayToast(response.message, 'error');
             }
         } catch (error: any) {
-            displayToast("Ocurrió un error al borrar el ítem", 'error');
+            displayToast("Ocurrió un error al borrar la transferencia", 'error');
         } finally {
             setShowDeleteDialog(false);
             setItemToDelete(undefined);
         }
     };
 
-    const getTotalAmmounts = (items: ItemResponse[] ): number => {
+    const getTotalAmmounts = (items: TransferResponse[] ): number => {
         let suma: number = 0;
 
         for (const item of items) {
@@ -59,7 +55,7 @@ const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList, displayT
         return suma;
     }
 
-    const getShortedList = (items: ItemResponse[]) : ItemResponse[]  => {
+    const getShortedList = (items: TransferResponse[]) : TransferResponse[]  => {
         return items.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
     }         
 
@@ -72,27 +68,30 @@ const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList, displayT
                             <div className='flex flex-column gap-3 p-2' key={monthKey}>
                                 <div className='flex flex-row justify-content-between'>
                                     <Text h5 className='m-0' color='primary' >{monthKey}</Text>                                                                                                  
-                                    <Text h5 className='m-0' color='primary' >Total: <span style={{color: listType === 'payment' ? 'red' : 'green'}}>{getTotalAmmounts(itemsList[monthKey]).toFixed(2)} €</span></Text>
+                                    <Text h5 className='m-0' color='primary' >Total: <span style={{color: 'primary'}}>{getTotalAmmounts(itemsList[monthKey]).toFixed(2)} €</span></Text>
                                 </div>
                                 {getShortedList(itemsList[monthKey]).map((item: any, index: any) => (
                                     <Card
                                         style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
                                         className='p-2'
-                                        key={item.itemId}
+                                        key={item.transferId}
                                         variant="bordered"
                                     >
-                                        <div className='flex justify-content-between'>                                                
-                                            <Text h5 className='m-0' color='primary' >{item.itemName}</Text>                                                
+                                        <div className='flex justify-content-between align-items-center'>
+                                            <div className='flex align-items-center gap-2'>
+                                                <CompareArrowsIcon color="primary" />
+                                                <Text h5 className='m-0' color='primary' >{item.transferName}</Text>                                                
+                                            </div>
                                             <Text h5 className='m-0' color='primary' >{`${new Date(item.startDate).getDate()}-${new Date(item.startDate).getMonth() + 1}-${new Date(item.startDate).getFullYear()}`}</Text>
                                         </div>
-                                        <div className='flex gap-2 justify-content-between align-items-center'>
+                                        <div className='flex gap-2 justify-content-between align-items-center mt-2'>
                                             <div className='flex flex-column'>                                                            
-                                                <Text h6 className='m-0' color="secondary" >{item.accountName}</Text>
-                                                <Text h6 className='m-0' >{item.itemDesc}</Text>                                                    
-                                                <Text h5 className='mt-2' color={listType === 'payment' ? 'red' : 'green'}>{item.ammountTypeId !== AmmountTypeEnum.Variable ? `${item.ammount} €` : listType === 'payment' ? 'Pago Variable' : 'Ingreso Variable'}</Text>
+                                                <Text h6 className='m-0' color="secondary" >{item.originAccountName} {'->'} {item.destinationAccountName}</Text>
+                                                <Text h6 className='m-0' >{item.transferDesc}</Text>                                                    
+                                                <Text h5 className='mt-2' color="primary">{`${item.ammount} €`}</Text>
                                             </div>
                                             <div className='flex flex-row gap-1'>
-                                                <Button icon={<DeleteIcon />} className='p-0 pt-1' style={{ color:'red', height: 'fit-content', width:'2rem' }} rounded link onClick={() => handleDeleteClick(item.itemId)} />
+                                                <Button icon={<DeleteIcon />} className='p-0 pt-1' style={{ color:'red', height: 'fit-content', width:'2rem' }} rounded link onClick={() => handleDeleteClick(item.transferId)} />
                                             </div>                                                
                                         </div>
                                     </Card>
@@ -105,7 +104,7 @@ const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList, displayT
                             className='p-2'
                             variant="bordered"
                         >
-                            {listType === 'payment' ? 'No existen pagos que mostrar' : 'No existen ingresos que mostrar'}
+                            No existen transferencias que mostrar
                         </Card>
                         }                                            
                     </div>
@@ -132,4 +131,4 @@ const PaymentsInvoicesSporadicList: FC<Props> = ({ listType, itemsList, displayT
     )
 }
 
-export default PaymentsInvoicesSporadicList
+export default TransferSporadicList

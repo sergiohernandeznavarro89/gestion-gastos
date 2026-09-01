@@ -2,50 +2,44 @@ import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ScrollPanel } from 'primereact/scrollpanel';
 import { Card, Text } from '@nextui-org/react';
-import { AmmountTypeEnum } from 'enums/AmmountTypeEnum';
-import { ItemResponse } from 'models/item/ItemResponse';
+import { TransferResponse } from 'models/transfer/TransferResponse';
 import { Button } from 'primereact/button';
 import EditIcon from '@mui/icons-material/CreateOutlined';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import { Dialog } from 'primereact/dialog';
-import PaymentForm from 'components/PaymentForm';
-import { ItemTypeEnum } from 'enums/ItemTypeEnum';
+import TransferForm from 'components/TransferForm';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 
-import { DeleteItem } from 'services/item/ItemService';
-
-type listType = 'payment' | 'invoice';
+import { DeleteTransfer } from 'services/transfer/TransferService';
 
 interface Props {
-    listType: listType;
-    itemsList: ItemResponse[];
+    itemsList: TransferResponse[];
     displayToast: (message: string, severity: string) => void;
-    itemType: number;
 };
 
-const PaymentsInvoicesRecurrentsList: FC<Props> = ({ listType, itemsList, displayToast, itemType }) => {
-    const user = useSelector((state: any) => state.userState);    
+const TransferRecurrentsList: FC<Props> = ({ itemsList, displayToast }) => {
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    const [selectedItem, setSelectedItem] = useState<ItemResponse>();
+    const [selectedItem, setSelectedItem] = useState<TransferResponse>();
     const [showDialogPayment, setShowDialogPayment] = useState<boolean>(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
     const [itemToDelete, setItemToDelete] = useState<number>();
 
-    const handleDeleteClick = (itemId: number) => {
-        setItemToDelete(itemId);
+    const handleDeleteClick = (transferId: number) => {
+        setItemToDelete(transferId);
         setShowDeleteDialog(true);
     };
 
     const handleDeleteConfirm = async () => {
         if (!itemToDelete) return;
         try {
-            const response = await DeleteItem(itemToDelete);
+            const response = await DeleteTransfer(itemToDelete);
             if (response.success) {
                 displayToast(response.message, 'success');
             } else {
                 displayToast(response.message, 'error');
             }
         } catch (error: any) {
-            displayToast("Ocurrió un error al borrar el ítem", 'error');
+            displayToast("Ocurrió un error al borrar la transferencia", 'error');
         } finally {
             setShowDeleteDialog(false);
             setItemToDelete(undefined);
@@ -62,22 +56,25 @@ const PaymentsInvoicesRecurrentsList: FC<Props> = ({ listType, itemsList, displa
                                 <Card
                                     style={{boxShadow: "rgba(0, 0, 0, 0.12) 0px 0px 4px 2px"}}
                                     className='p-2'
-                                    key={x.itemId}
+                                    key={x.transferId}
                                     variant="bordered"
                                 >
-                                    <div className='flex justify-content-between'>                                                
-                                        <Text h5 className='m-0' color='primary' >{x.itemName}</Text>                                                
+                                    <div className='flex justify-content-between align-items-center'>
+                                        <div className='flex align-items-center gap-2'>
+                                            <CompareArrowsIcon color="primary" />
+                                            <Text h5 className='m-0' color='primary' >{x.transferName}</Text>                                                
+                                        </div>
                                         <Text h5 className='m-0' color='primary' >{`${new Date(x.startDate).getDate()}-${new Date(x.startDate).getMonth() + 1}-${new Date(x.startDate).getFullYear()}`}</Text>
                                     </div>
-                                    <div className='flex gap-2 justify-content-between align-items-center'>
+                                    <div className='flex gap-2 justify-content-between align-items-center mt-2'>
                                         <div className='flex flex-column'>                                                            
-                                            <Text h6 className='m-0' color="secondary" >{x.accountName}</Text>
-                                            <Text h6 className='m-0' >{x.itemDesc}</Text>                                                    
-                                            <Text h5 className='mt-2' color={listType === 'payment' ? 'red' : 'green'}>{x.ammountTypeId !== AmmountTypeEnum.Variable ? `${x.ammount} €` : listType === 'payment' ? 'Pago Variable' : 'Ingreso Variable'}</Text>
+                                            <Text h6 className='m-0' color="secondary" >{x.originAccountName} {'->'} {x.destinationAccountName}</Text>
+                                            <Text h6 className='m-0' >{x.transferDesc}</Text>                                                    
+                                            <Text h5 className='mt-2' color="primary">{`${x.ammount} €`}</Text>
                                         </div>
                                         <div className='flex flex-row gap-1'>
                                             <Button icon={<EditIcon />} className='p-0 pt-1' style={{ height: 'fit-content', width:'2rem' }} rounded link onClick={() => {setSelectedItem(x); setShowDialogPayment(true)}}/>
-                                            <Button icon={<DeleteIcon />} className='p-0 pt-1' style={{ color:'red', height: 'fit-content', width:'2rem' }} rounded link onClick={() => handleDeleteClick(x.itemId)} />
+                                            <Button icon={<DeleteIcon />} className='p-0 pt-1' style={{ color:'red', height: 'fit-content', width:'2rem' }} rounded link onClick={() => handleDeleteClick(x.transferId)} />
                                         </div>
                                     </div>
                                 </Card>
@@ -88,7 +85,7 @@ const PaymentsInvoicesRecurrentsList: FC<Props> = ({ listType, itemsList, displa
                                 className='p-2'
                                 variant="bordered"
                             >
-                                {listType === 'payment' ? 'No existen pagos que mostrar' : 'No existen ingresos que mostrar'}
+                                No existen transferencias que mostrar
                             </Card>
                         }
                     </div>
@@ -98,12 +95,18 @@ const PaymentsInvoicesRecurrentsList: FC<Props> = ({ listType, itemsList, displa
             <Dialog 
                 position="center" 
                 style={ isMobile ? { width: '95%' } : {width:'50%'}} 
-                header={`Edición ${selectedItem?.itemName}`} 
+                header={`Edición ${selectedItem?.transferName}`} 
                 maximizable 
                 visible={showDialogPayment} 
                 onHide={() => setShowDialogPayment(false)}
             >
-                <PaymentForm itemType={itemType} cancelClick={() => setShowDialogPayment(false)} displayToast={displayToast} accountId={selectedItem?.accountId} item={selectedItem}/>
+                {selectedItem && (
+                    <TransferForm 
+                        cancelClick={() => setShowDialogPayment(false)} 
+                        displayToast={displayToast} 
+                        transfer={selectedItem} 
+                    />
+                )}
             </Dialog>
 
             <Dialog 
@@ -126,4 +129,4 @@ const PaymentsInvoicesRecurrentsList: FC<Props> = ({ listType, itemsList, displa
     )
 }
 
-export default PaymentsInvoicesRecurrentsList
+export default TransferRecurrentsList

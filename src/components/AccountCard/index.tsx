@@ -13,6 +13,9 @@ import EditIcon from '@mui/icons-material/CreateOutlined';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import { StyledCard } from "./styled";
 import AccountForm from 'components/AccountForm';
+import { DeleteAccount } from 'services/account/AccountService';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import TransferForm from 'components/TransferForm';
 
 interface Props{
     item: AccountResponse;
@@ -23,9 +26,30 @@ interface Props{
 const AccountCard: FC<Props> = ({item, displayToast, fullWidth = false}) => {
 
     const [showDialogPayment, setShowDialogPayment] = useState<boolean>(false);
+    const [showDialogTransfer, setShowDialogTransfer] = useState<boolean>(false);
     const [showDialogNewAccount, setShowDialogNewAccount] = useState<boolean>(false);
     const [itemType, setItemType] = useState<number>();
+    const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
     const isMobile = window.matchMedia('(max-width: 768px)').matches;    
+
+    const handleDeleteClick = () => {
+        setShowDeleteDialog(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        try {
+            const response = await DeleteAccount(item.accountId);
+            if (response.success) {
+                displayToast(response.message, 'success');
+            } else {
+                displayToast(response.message, 'error');
+            }
+        } catch (error: any) {
+            displayToast("Ocurrió un error al borrar la cuenta", 'error');
+        } finally {
+            setShowDeleteDialog(false);
+        }
+    };
 
     return (
     <>
@@ -43,16 +67,28 @@ const AccountCard: FC<Props> = ({item, displayToast, fullWidth = false}) => {
                         <Text h5 color={item.ammount > 0 ? 'green' : 'red'}>{item.ammount} €</Text>
                         { fullWidth && <div className="flex flex-row gap-1">
                             <Button icon={<EditIcon />} className='p-0 pt-1' style={{ height: 'fit-content', width:'2rem' }} rounded link onClick={() => setShowDialogNewAccount(true)}/>
-                            <Button icon={<DeleteIcon />} className='p-0 pt-1' style={{ color:'red', height: 'fit-content', width:'2rem' }} rounded link />
+                            <Button icon={<DeleteIcon />} className='p-0 pt-1' style={{ color:'red', height: 'fit-content', width:'2rem' }} rounded link onClick={handleDeleteClick} />
                         </div>}
                     </div>
                     <div className={`flex ${fullWidth ? 'flex-column gap-2' : 'flex-row'} justify-content-between`}>
                         <Button icon={<ArrowCircleDownIcon />} severity='success' rounded text raised onClick={() => {setShowDialogPayment(true); setItemType(ItemTypeEnum.Ingreso)}}/>
                         <Button icon={<ArrowCircleUpIcon />} severity='danger' rounded text raised onClick={() => {setShowDialogPayment(true); setItemType(ItemTypeEnum.Gasto)}}/>
+                        <Button icon={<CompareArrowsIcon />} severity='info' rounded text raised onClick={() => setShowDialogTransfer(true)}/>
                     </div>
                 </div>
             </Box>
         </StyledCard>        
+
+        <Dialog 
+            position="center" 
+            style={ isMobile ? { width: '95%' } : {width:'50%'}} 
+            header={`Nueva Transferencia desde ${item.accountName}`} 
+            maximizable 
+            visible={showDialogTransfer} 
+            onHide={() => setShowDialogTransfer(false)}
+        >
+            <TransferForm cancelClick={() => setShowDialogTransfer(false)} displayToast={displayToast} transfer={{originAccountId: item.accountId} as any}/>
+        </Dialog>
 
         <Dialog 
             position="center" 
@@ -74,6 +110,23 @@ const AccountCard: FC<Props> = ({item, displayToast, fullWidth = false}) => {
             onHide={() => setShowDialogNewAccount(false)}
         >
             <AccountForm account={item} cancelClick={() => setShowDialogNewAccount(false)} displayToast={displayToast} />
+        </Dialog>
+
+        <Dialog 
+            position="center" 
+            style={ isMobile ? { width: '95%' } : {width:'30%'}} 
+            header="Confirmar Borrado"
+            maximizable={false}
+            visible={showDeleteDialog} 
+            onHide={() => setShowDeleteDialog(false)}
+        >
+            <div className="flex flex-column gap-3">
+                <Text>¿Estás seguro de que quieres borrar esta cuenta?</Text>
+                <div className="flex justify-content-end gap-2">
+                    <Button label="Cancelar" icon="pi pi-times" onClick={() => setShowDeleteDialog(false)} className="p-button-text" />
+                    <Button label="Borrar" icon="pi pi-check" onClick={handleDeleteConfirm} autoFocus severity="danger" />
+                </div>
+            </div>
         </Dialog>
     </>
   )

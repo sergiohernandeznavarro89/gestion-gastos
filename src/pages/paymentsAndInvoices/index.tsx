@@ -43,37 +43,35 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
     }, [])
 
     useEffect(() => {
-        if(itemsList.length>0){
-            const paymentsRecurrentes = itemsList.filter(x => x.itemTypeId === ItemTypeEnum.Gasto && x.periodTypeId === PeriodTypeEnum.Recurrente);
-            setItemsPaymentRecurrenteList(paymentsRecurrentes);
-            
-            const invoicesRecurrentes = itemsList.filter(x => x.itemTypeId === ItemTypeEnum.Ingreso && x.periodTypeId === PeriodTypeEnum.Recurrente);
-            setItemsInvoiceRecurrenteList(invoicesRecurrentes);
+        const paymentsRecurrentes = itemsList.filter(x => x.itemTypeId === ItemTypeEnum.Gasto && x.periodTypeId === PeriodTypeEnum.Recurrente);
+        setItemsPaymentRecurrenteList(paymentsRecurrentes);
+        
+        const invoicesRecurrentes = itemsList.filter(x => x.itemTypeId === ItemTypeEnum.Ingreso && x.periodTypeId === PeriodTypeEnum.Recurrente);
+        setItemsInvoiceRecurrenteList(invoicesRecurrentes);
 
-            const paymentsExporadicos: ItemResponse[] = itemsList.filter(x => x.itemTypeId === ItemTypeEnum.Gasto && x.periodTypeId === PeriodTypeEnum.Exporadico);
-            const paymentsSortedItems = paymentsExporadicos.sort((a, b) => {
-                const dateA = new Date(a.startDate).getTime();
-                const dateB = new Date(b.startDate).getTime();
-                return dateB - dateA;
-            });
-            const paymentsGroupedByMonthYear = _.groupBy(paymentsSortedItems, (item: any) => {
-                const startDate = new Date(item.startDate);
-                return `${startDate.getMonth() + 1}-${startDate.getFullYear()}`;
-            });
-            setItemsPaymentExporadicoList(paymentsGroupedByMonthYear);
-            
-            const invoicesExporadicos = itemsList.filter(x => x.itemTypeId === ItemTypeEnum.Ingreso && x.periodTypeId === PeriodTypeEnum.Exporadico);
-            const invoicesSortedItems = invoicesExporadicos.sort((a, b) => {
-                const dateA = new Date(a.startDate).getTime();
-                const dateB = new Date(b.startDate).getTime();
-                return dateB - dateA;
-            });
-            const invoicesGroupedByMonthYear = _.groupBy(invoicesSortedItems, (item: any) => {
-                const startDate = new Date(item.startDate);
-                return `${startDate.getMonth() + 1}-${startDate.getFullYear()}`;
-            });
-            setItemsInvoiceExporadicoList(invoicesGroupedByMonthYear);
-        }
+        const paymentsExporadicos: ItemResponse[] = itemsList.filter(x => x.itemTypeId === ItemTypeEnum.Gasto && x.periodTypeId === PeriodTypeEnum.Exporadico);
+        const paymentsSortedItems = paymentsExporadicos.sort((a, b) => {
+            const dateA = new Date(a.startDate).getTime();
+            const dateB = new Date(b.startDate).getTime();
+            return dateB - dateA;
+        });
+        const paymentsGroupedByMonthYear = _.groupBy(paymentsSortedItems, (item: any) => {
+            const startDate = new Date(item.startDate);
+            return `${startDate.getMonth() + 1}-${startDate.getFullYear()}`;
+        });
+        setItemsPaymentExporadicoList(paymentsGroupedByMonthYear);
+        
+        const invoicesExporadicos = itemsList.filter(x => x.itemTypeId === ItemTypeEnum.Ingreso && x.periodTypeId === PeriodTypeEnum.Exporadico);
+        const invoicesSortedItems = invoicesExporadicos.sort((a, b) => {
+            const dateA = new Date(a.startDate).getTime();
+            const dateB = new Date(b.startDate).getTime();
+            return dateB - dateA;
+        });
+        const invoicesGroupedByMonthYear = _.groupBy(invoicesSortedItems, (item: any) => {
+            const startDate = new Date(item.startDate);
+            return `${startDate.getMonth() + 1}-${startDate.getFullYear()}`;
+        });
+        setItemsInvoiceExporadicoList(invoicesGroupedByMonthYear);
     }, [itemsList])
     
 
@@ -185,12 +183,14 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                                 {itemsPaymentExporadicoList && <PaymentsInvoicesSporadicList
                                     listType='payment'
                                     itemsList={itemsPaymentExporadicoList}
+                                    displayToast={displayToast}
                                 />}
                             </TabPanel>
                             <TabPanel header="Ingresos">
                                 {itemsInvoiceExporadicoList && <PaymentsInvoicesSporadicList
                                     listType='invoice'
                                     itemsList={itemsInvoiceExporadicoList}
+                                    displayToast={displayToast}
                                 />}
                             </TabPanel>
                         </TabView>                        
@@ -205,6 +205,7 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                                     {itemsPaymentExporadicoList && <PaymentsInvoicesSporadicList
                                         listType='payment'
                                         itemsList={itemsPaymentExporadicoList}
+                                        displayToast={displayToast}
                                     />}
                                 </Card>
                             </div>
@@ -217,6 +218,7 @@ const PaymentsAndInvoices: FC<Props> = ({ userId }) => {
                                     {itemsInvoiceExporadicoList && <PaymentsInvoicesSporadicList
                                         listType='invoice'
                                         itemsList={itemsInvoiceExporadicoList}
+                                        displayToast={displayToast}
                                     />}
                                 </Card>
                             </div>
