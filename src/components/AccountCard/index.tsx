@@ -14,6 +14,8 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import { StyledCard } from "./styled";
 import AccountForm from 'components/AccountForm';
 import { DeleteAccount } from 'services/account/AccountService';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import TransferForm from 'components/TransferForm';
 
 interface Props{
     item: AccountResponse;
@@ -24,6 +26,7 @@ interface Props{
 const AccountCard: FC<Props> = ({item, displayToast, fullWidth = false}) => {
 
     const [showDialogPayment, setShowDialogPayment] = useState<boolean>(false);
+    const [showDialogTransfer, setShowDialogTransfer] = useState<boolean>(false);
     const [showDialogNewAccount, setShowDialogNewAccount] = useState<boolean>(false);
     const [itemType, setItemType] = useState<number>();
     const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
@@ -70,10 +73,22 @@ const AccountCard: FC<Props> = ({item, displayToast, fullWidth = false}) => {
                     <div className={`flex ${fullWidth ? 'flex-column gap-2' : 'flex-row'} justify-content-between`}>
                         <Button icon={<ArrowCircleDownIcon />} severity='success' rounded text raised onClick={() => {setShowDialogPayment(true); setItemType(ItemTypeEnum.Ingreso)}}/>
                         <Button icon={<ArrowCircleUpIcon />} severity='danger' rounded text raised onClick={() => {setShowDialogPayment(true); setItemType(ItemTypeEnum.Gasto)}}/>
+                        <Button icon={<CompareArrowsIcon />} severity='info' rounded text raised onClick={() => setShowDialogTransfer(true)}/>
                     </div>
                 </div>
             </Box>
         </StyledCard>        
+
+        <Dialog 
+            position="center" 
+            style={ isMobile ? { width: '95%' } : {width:'50%'}} 
+            header={`Nueva Transferencia desde ${item.accountName}`} 
+            maximizable 
+            visible={showDialogTransfer} 
+            onHide={() => setShowDialogTransfer(false)}
+        >
+            <TransferForm cancelClick={() => setShowDialogTransfer(false)} displayToast={displayToast} transfer={{originAccountId: item.accountId} as any}/>
+        </Dialog>
 
         <Dialog 
             position="center" 

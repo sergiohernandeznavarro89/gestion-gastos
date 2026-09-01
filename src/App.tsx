@@ -14,7 +14,7 @@ import Account from 'pages/account';
 import Category from 'pages/category';
 import PaymentsAndInvoices from 'pages/paymentsAndInvoices';
 import Debt from 'pages/debt';
-
+import Transfer from 'pages/transfer';
 
 function App() {
 
@@ -41,6 +41,7 @@ function App() {
         <Route path="/categorias" element={<Category userId={user.userId}/>} />
         <Route path="/pagos-cobros" element={<PaymentsAndInvoices userId={user.userId}/>} />
         <Route path="/deudas" element={<Debt userId={user.userId}/>} />
+        <Route path="/transferencias" element={<Transfer userId={user.userId}/>} />
       </Routes>
     </>
   );

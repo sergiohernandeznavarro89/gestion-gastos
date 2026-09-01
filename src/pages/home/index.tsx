@@ -9,9 +9,11 @@ import { GetNextMonthPendingPayItems } from 'services/item/ItemService';
 
 import { AccountResponse } from 'models/account/AccountResponse';
 import { PendingPayItemsResponse } from 'models/item/PendingPayItemResponse';
+import { PendingTransferResponse } from 'models/transfer/PendingTransferResponse';
+import { GetPendingPayTransfers, GetNextMonthPendingPayTransfers } from 'services/transfer/TransferService';
 
 import AccountSlider from 'components/AccountSlider';
-import PendingPayItems from 'components/PendingPayItems';
+import PendingPayItems, { UnifiedPendingItem } from 'components/PendingPayItems';
 import Spinner from 'components/Spinner';
 
 interface Props {
@@ -23,8 +25,8 @@ const Home: FC<Props> = ({ userId }) => {
     const dispatch = useDispatch();
     const [accounts, setAccounts] = useState<AccountResponse[]>([]);
     const [refresh, setRefresh] = useState<boolean>(false);
-    const [pendingPayItems, setPendingPayItems] = useState<PendingPayItemsResponse[]>([]);
-    const [pendingPayItemsNextMonth, setPendingPayItemsNextMonth] = useState<PendingPayItemsResponse[]>([]);
+    const [pendingPayItems, setPendingPayItems] = useState<UnifiedPendingItem[]>([]);
+    const [pendingPayItemsNextMonth, setPendingPayItemsNextMonth] = useState<UnifiedPendingItem[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
@@ -39,16 +41,69 @@ const Home: FC<Props> = ({ userId }) => {
             (async () => {
                 const [
                     accountsResponse,
-                    pendingPayRespnose,
-                    pendingPayNextMonthResponse
+                    pendingPayResponse,
+                    pendingPayNextMonthResponse,
+                    pendingTransfersResponse,
+                    pendingTransfersNextMonthResponse
                 ] = await Promise.all([
                     GetAccountsByUser(userId),
                     GetPendingPayItems(userId),
                     GetNextMonthPendingPayItems(userId),
+                    GetPendingPayTransfers(userId),
+                    GetNextMonthPendingPayTransfers(userId)
                 ]);
                 setAccounts(accountsResponse);
-                setPendingPayItems(pendingPayRespnose);
-                setPendingPayItemsNextMonth(pendingPayNextMonthResponse);
+
+                const unifiedPending: UnifiedPendingItem[] = [
+                    ...pendingPayResponse.map(i => ({
+                        id: i.itemId,
+                        name: i.itemName,
+                        startDate: i.startDate,
+                        desc: i.itemDesc,
+                        ammount: i.ammount,
+                        ammountTypeId: i.ammountTypeId,
+                        itemTypeId: i.itemTypeId,
+                        type: 'item' as const,
+                        accountDesc: i.accountName
+                    })),
+                    ...pendingTransfersResponse.map(t => ({
+                        id: t.transferId,
+                        name: t.transferName,
+                        startDate: t.startDate,
+                        desc: t.transferDesc,
+                        ammount: t.ammount,
+                        ammountTypeId: 1, // Fixed
+                        type: 'transfer' as const,
+                        accountDesc: `${t.originAccountName} -> ${t.destinationAccountName}`
+                    }))
+                ].sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+
+                const unifiedPendingNextMonth: UnifiedPendingItem[] = [
+                    ...pendingPayNextMonthResponse.map(i => ({
+                        id: i.itemId,
+                        name: i.itemName,
+                        startDate: i.startDate,
+                        desc: i.itemDesc,
+                        ammount: i.ammount,
+                        ammountTypeId: i.ammountTypeId,
+                        itemTypeId: i.itemTypeId,
+                        type: 'item' as const,
+                        accountDesc: i.accountName
+                    })),
+                    ...pendingTransfersNextMonthResponse.map(t => ({
+                        id: t.transferId,
+                        name: t.transferName,
+                        startDate: t.startDate,
+                        desc: t.transferDesc,
+                        ammount: t.ammount,
+                        ammountTypeId: 1, // Fixed
+                        type: 'transfer' as const,
+                        accountDesc: `${t.originAccountName} -> ${t.destinationAccountName}`
+                    }))
+                ].sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+
+                setPendingPayItems(unifiedPending);
+                setPendingPayItemsNextMonth(unifiedPendingNextMonth);
                 setLoading(false);
             })();
         }

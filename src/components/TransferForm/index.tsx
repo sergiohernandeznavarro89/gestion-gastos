@@ -1,4 +1,3 @@
-
 import { FC, useState, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Button } from 'primereact/button';
@@ -6,9 +5,8 @@ import { useSelector } from 'react-redux';
 import { Text } from '@nextui-org/react';
 import { classNames } from 'primereact/utils';
 import { InputText } from 'primereact/inputtext';
-import { ButtonTag, ButtonTagSelected } from './styled';
+import { ButtonTag, ButtonTagSelected } from '../PaymentForm/styled';
 import { InputNumber } from 'primereact/inputnumber';
-import { AmmountTypeEnum } from 'enums/AmmountTypeEnum';
 import { PeriodTypeEnum } from 'enums/PeriodTypeEnum';
 import { Calendar } from 'primereact/calendar';
 import { Dropdown } from 'primereact/dropdown';
@@ -16,65 +14,66 @@ import { CategoryResponse } from 'models/category/CategoryResponse';
 import { SubCategoryResponse } from 'models/subCategory/SubCategoryResponse';
 import { GetCategoriesByUser } from 'services/category/CategoryService';
 import { GetSubCategoriesByUser } from 'services/subCategory/SubCategoryService';
-import { ItemTypeEnum } from 'enums/ItemTypeEnum';
-import { AddItem, UpdateItem } from 'services/item/ItemService';
+import { AddTransfer, UpdateTransfer } from 'services/transfer/TransferService';
 import moment from 'moment'
 import 'moment/locale/es';
-import { ItemResponse } from 'models/item/ItemResponse';
+import { TransferResponse } from 'models/transfer/TransferResponse';
 import { ResponseBase } from 'models/shared/ResponseBase';
+import { GetAccountsByUser } from 'services/account/AccountService';
+import { AccountResponse } from 'models/account/AccountResponse';
 
 interface Props {
     cancelClick: () => void;
     displayToast: (message: string, severity: string) => void;
-    itemType: number | undefined;
-    item?: ItemResponse;
-    accountId: number | undefined;
+    transfer?: TransferResponse;
 };
 
-const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, accountId }) => {
+const TransferForm: FC<Props> = ({ cancelClick, displayToast, transfer }) => {
     const user = useSelector((state: any) => state.userState);
-    const [periodTypeId, setPeriodTypeId] = useState<number>(item ? PeriodTypeEnum.Recurrente : PeriodTypeEnum.Exporadico);
-    const [ammountTypeId, setAmmountTypeId] = useState<number>(item ? item.ammountTypeId : AmmountTypeEnum.Fijo);
+    const [periodTypeId, setPeriodTypeId] = useState<number>(transfer ? transfer.periodTypeId : PeriodTypeEnum.Exporadico);
     const [categoriesList, setCategoriesList] = useState<CategoryResponse[]>([]);
     const [subCategoriesList, setSubCategoriesList] = useState<SubCategoryResponse[]>([]);
     const [subCategoriesFilterList, setSubCategoriesFilterList] = useState<SubCategoryResponse[]>([]);
+    const [accountsList, setAccountsList] = useState<AccountResponse[]>([]);
     const isMobile = window.matchMedia('(max-width: 768px)').matches;    
 
     useEffect(() => {
-        if(item?.categoryId && subCategoriesList.length > 0){
+        if(transfer?.categoryId && subCategoriesList.length > 0){
             changeCategory();
         }
-    }, [item, subCategoriesList])
+    }, [transfer, subCategoriesList])
     
-
     useEffect(() => {
         if (user.userId) {            
             (async () => {
                 const [
                     categoriesResponse,
-                    subCategoriesResponse
+                    subCategoriesResponse,
+                    accountsResponse
                 ] = await Promise.all([
                     GetCategoriesByUser(user.userId),
-                    GetSubCategoriesByUser(user.userId)
+                    GetSubCategoriesByUser(user.userId),
+                    GetAccountsByUser(user.userId)
                 ]);
                 
                 setCategoriesList(categoriesResponse);
-                setSubCategoriesList(subCategoriesResponse);                           
+                setSubCategoriesList(subCategoriesResponse);
+                setAccountsList(accountsResponse);                           
             })();
         }
     }, [user.userId]);
     
-
     const defaultValues = {        
-        itemName: item ? item.itemName : '',
-        itemDesc: item ? item.itemDesc : '',
-        ammount: item ? item.ammount.toString() : '',
-        periodity: item ? item.periodity : null,
-        startDate: item ? new Date(item.startDate) : null,
-        endDate: item ? new Date(item.endDate) : null,
-        categoryId: item ? item.categoryId : null,
-        subCategoryId: item ? item.subCategoryId : null,
-        accountId: item ? item.accountId : accountId
+        transferName: transfer?.transferName ? transfer.transferName : '',
+        transferDesc: transfer?.transferDesc ? transfer.transferDesc : '',
+        ammount: transfer?.ammount ? transfer.ammount.toString() : '',
+        periodity: transfer?.periodity ? transfer.periodity : null,
+        startDate: transfer?.startDate ? new Date(transfer.startDate) : null,
+        endDate: transfer?.endDate ? new Date(transfer.endDate) : null,
+        categoryId: transfer?.categoryId ? transfer.categoryId : null,
+        subCategoryId: transfer?.subCategoryId ? transfer.subCategoryId : null,
+        originAccountId: transfer?.originAccountId ? transfer.originAccountId : null,
+        destinationAccountId: transfer?.destinationAccountId ? transfer.destinationAccountId : null
     };
 
     const {
@@ -82,37 +81,42 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, acc
         formState: { errors },
         handleSubmit,
         getValues,
+        setError,
+        clearErrors
     } = useForm({ defaultValues });
     
     const request = async (data: any): Promise<ResponseBase> => {
         const requestData = {            
-            itemName: data.itemName,
-            itemDesc: data.itemDesc,
-            ammount: ammountTypeId === AmmountTypeEnum.Variable ? 0 : data.ammount || 0,
-            periodity: data.periodity,
+            transferName: data.transferName,
+            transferDesc: data.transferDesc,
+            ammount: Number(data.ammount?.toString().replace(',', '.')) || 0,
+            periodity: data.periodity ? Number(data.periodity) : null,
             startDate: data.startDate ? moment(data.startDate).format('YYYY-MM-DDTHH:mm:ss') : moment(new Date()).format('YYYY-MM-DDTHH:mm:ss'),
             endDate: data.endDate ? moment(data.endDate).format('YYYY-MM-DDTHH:mm:ss') : moment(new Date()).format('YYYY-MM-DDTHH:mm:ss'),
-            cancelled: false,
             categoryId: data.categoryId,
-            subCategoryId: data.subCategoryId,
-            itemTypeId: itemType || ItemTypeEnum.Gasto,
-            ammountTypeId: periodTypeId === PeriodTypeEnum.Exporadico ? AmmountTypeEnum.Fijo : ammountTypeId,
-            accountId: data.accountId
+            subCategoryId: data.subCategoryId || null,
+            originAccountId: data.originAccountId,
+            destinationAccountId: data.destinationAccountId
         }
 
-        if(!item){
+        if(!transfer?.transferId){
             var postData = {...requestData, ...{periodTypeId: periodTypeId, userId: user.userId}};
-            const response = await AddItem(postData);
+            const response = await AddTransfer(postData as any);
             return response;
         }
         else{
-            var putData = {...requestData, ...{itemId: item.itemId}};
-            const response = await UpdateItem(putData);
+            var putData = {...requestData, ...{periodTypeId: periodTypeId, transferId: transfer.transferId, userId: user.userId}};
+            const response = await UpdateTransfer(putData as any);
             return response;
         }
     }
 
     const onSubmit = async (data: any) => {        
+        if (data.originAccountId === data.destinationAccountId) {
+            setError("destinationAccountId", { type: "manual", message: "La cuenta de destino no puede ser igual a la cuenta origen" });
+            return;
+        }
+        
         var response = await request(data);
 
         if (response?.success) {
@@ -138,38 +142,30 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, acc
         <>
             <form className='flex flex-column gap-4' onSubmit={handleSubmit(onSubmit)}>                
                 <div className={`flex ${isMobile ? 'flex-column gap-2' : 'flex-row mb-3'}`}>
-                    {!item && <div className={`flex flex-column gap-2 w-12 md:w-6 ${!isMobile && 'align-items-center'}`}>
-                        <Text h6 className='m-0' color='primary'>Tipo de cobro</Text>
+                    {!transfer?.transferId && <div className={`flex flex-column gap-2 w-12 md:w-6 ${!isMobile && 'align-items-center'}`}>
+                        <Text h6 className='m-0' color='primary'>Tipo de transferencia</Text>
                         <div className='flex gap-2 flex-wrap'>
                             {periodTypeId === PeriodTypeEnum.Exporadico ? 
                                 <ButtonTagSelected label='Exporádico' rounded type='button'/> : 
-                                <ButtonTag label='Exporádico' rounded onClick={() => {setPeriodTypeId(PeriodTypeEnum.Exporadico); setAmmountTypeId(AmmountTypeEnum.Fijo)}} type='button'/>}
+                                <ButtonTag label='Exporádico' rounded onClick={() => {setPeriodTypeId(PeriodTypeEnum.Exporadico);}} type='button'/>}
                             {periodTypeId === PeriodTypeEnum.Recurrente ? <ButtonTagSelected label='Recurrente' rounded type='button'/> : <ButtonTag label='Recurrente' rounded onClick={() => setPeriodTypeId(PeriodTypeEnum.Recurrente)} type='button'/>}
                         </div>
                     </div>}
-
-                    {periodTypeId === PeriodTypeEnum.Recurrente && <div className={`flex flex-column gap-2 w-12 md:w-6 ${!isMobile && !item && 'align-items-center'}`}>
-                        <Text h6 className='m-0' color='primary'>Tipo de pago</Text>
-                        <div className='flex gap-2 flex-wrap'>
-                            {ammountTypeId === AmmountTypeEnum.Fijo ? <ButtonTagSelected label='Fijo' rounded type='button'/> : <ButtonTag label='Fijo' rounded onClick={() => setAmmountTypeId(AmmountTypeEnum.Fijo)} type='button'/>}
-                            {ammountTypeId === AmmountTypeEnum.Variable ? <ButtonTagSelected label='Variable' rounded type='button'/> : <ButtonTag label='Variable' rounded onClick={() => setAmmountTypeId(AmmountTypeEnum.Variable)} type='button'/>}
-                        </div>
-                    </div>}                        
                 </div>
                 <div className='formgrid grid'>
                     <div className='field flex flex-column col-12 md:col-6'>
                         <Controller                        
-                            name="itemName"
+                            name="transferName"
                             control={control}
                             rules={{ required: 'Nombre es requerido' }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.itemName })}></label>
+                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.transferName })}></label>
                                     <span className="p-float-label">
                                         <InputText id={field.name} value={field.value} className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} onChange={(e) => field.onChange(e.target.value)} />
                                         <label htmlFor={field.name}>Nombre</label>
                                     </span>
-                                    {errors.itemName && <small className="p-error">{errors.itemName.message}</small>}
+                                    {errors.transferName && <small className="p-error">{errors.transferName.message}</small>}
                                 </>
                             )}
                         />
@@ -177,11 +173,11 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, acc
 
                     <div className='field flex flex-column col-12 md:col-6'>
                         <Controller
-                            name="itemDesc"
+                            name="transferDesc"
                             control={control}                        
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.itemDesc })}></label>
+                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.transferDesc })}></label>
                                     <span className="p-float-label">
                                         <InputText id={field.name} value={field.value} className={`p-inputtext-sm w-full`} onChange={(e) => field.onChange(e.target.value)} />
                                         <label htmlFor={field.name}>Descripción</label>
@@ -191,25 +187,23 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, acc
                         />
                     </div>
 
-                    {((periodTypeId === PeriodTypeEnum.Exporadico) || (periodTypeId === PeriodTypeEnum.Recurrente && ammountTypeId === AmmountTypeEnum.Fijo )) && 
-                        <div className='field flex flex-column col-12 md:col-6'>
-                            <Controller
-                                name="ammount"
-                                control={control}
-                                rules={{ required: ammountTypeId === AmmountTypeEnum.Fijo && 'Cantidad es requerido' }}
-                                render={({ field, fieldState }) => (
-                                    <>
-                                        <label htmlFor={field.name} className={classNames({ 'p-error': errors.ammount })}></label>
-                                        <span className="p-float-label">
-                                            <InputText prefix=' €' id={field.name} value={field.value} className={`p-inputtext-sm w-full`} onChange={(e) => field.onChange(e.target.value)} />                                        
-                                            <label htmlFor={field.name}>Cantidad</label>
-                                        </span>
-                                        {errors.ammount && <small className="p-error">{errors.ammount.message}</small>}
-                                    </>
-                                )}
-                            />     
-                        </div>
-                    }             
+                    <div className='field flex flex-column col-12 md:col-6'>
+                        <Controller
+                            name="ammount"
+                            control={control}
+                            rules={{ required: 'Cantidad es requerida' }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.ammount })}></label>
+                                    <span className="p-float-label">
+                                        <InputText prefix=' €' id={field.name} value={field.value} className={`p-inputtext-sm w-full`} onChange={(e) => field.onChange(e.target.value)} />                                        
+                                        <label htmlFor={field.name}>Cantidad</label>
+                                    </span>
+                                    {errors.ammount && <small className="p-error">{errors.ammount.message}</small>}
+                                </>
+                            )}
+                        />     
+                    </div>
                     
                     {periodTypeId === PeriodTypeEnum.Recurrente && 
                         <>
@@ -303,24 +297,68 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, acc
                         />
                     </div>
                     
-                    {item && <div className='field flex flex-column col-12 md:col-6'>
+                    <div className='field flex flex-column col-12 md:col-6'>
                         <Controller
-                            name="accountId"
+                            name="originAccountId"
                             control={control}
-                            rules={{ required: 'Cuenta es requerida' }}
-                            render={({ field, fieldState }
-                                ) => (
+                            rules={{ required: 'Cuenta de origen es requerida' }}
+                            render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.accountId })}></label>
+                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.originAccountId })}></label>
                                     <span className="p-float-label">
-                                        <InputText disabled id={field.name} value={item?.accountName} className={`p-inputtext-sm w-full`} />                                        
-                                        <label htmlFor={field.name}>Cuenta</label>
+                                        <Dropdown 
+                                            appendTo='self' 
+                                            showClear 
+                                            value={field.value} 
+                                            onChange={(e) => {
+                                                field.onChange(e.target.value);
+                                                clearErrors("destinationAccountId");
+                                            }} 
+                                            options={accountsList} 
+                                            optionValue='accountId' 
+                                            optionLabel="accountName" 
+                                            className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} 
+                                            disabled={!!transfer?.transferId}
+                                        />
+                                        <label htmlFor={field.name}>Cuenta Origen</label>
                                     </span>
-                                    {errors.accountId && <small className="p-error">{errors.accountId.message}</small>}
+                                    {errors.originAccountId && <small className="p-error">{errors.originAccountId.message}</small>}
                                 </>
                             )}
                         />
-                    </div>}
+                    </div>
+
+                    <div className='field flex flex-column col-12 md:col-6'>
+                        <Controller
+                            name="destinationAccountId"
+                            control={control}
+                            rules={{ required: 'Cuenta de destino es requerida' }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.destinationAccountId })}></label>
+                                    <span className="p-float-label">
+                                        <Dropdown 
+                                            appendTo='self' 
+                                            showClear 
+                                            value={field.value} 
+                                            onChange={(e) => {
+                                                field.onChange(e.target.value);
+                                                clearErrors("destinationAccountId");
+                                            }} 
+                                            options={accountsList} 
+                                            optionValue='accountId' 
+                                            optionLabel="accountName" 
+                                            className={`p-inputtext-sm w-full ${classNames({ 'p-invalid': fieldState.error })}`} 
+                                            disabled={!!transfer?.transferId}
+                                        />
+                                        <label htmlFor={field.name}>Cuenta Destino</label>
+                                    </span>
+                                    {errors.destinationAccountId && <small className="p-error">{errors.destinationAccountId.message}</small>}
+                                </>
+                            )}
+                        />
+                    </div>
+
                 </div>
                 <div className='flex justify-content-end gap-2'>
                     <Button label="Cancelar" type='button' onClick={cancelClick} severity='danger' raised text size='small' />
@@ -331,4 +369,4 @@ const PaymentForm: FC<Props> = ({ cancelClick, displayToast, itemType, item, acc
     )
 }
 
-export default PaymentForm
+export default TransferForm
