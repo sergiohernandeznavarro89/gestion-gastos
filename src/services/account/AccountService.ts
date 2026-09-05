@@ -1,19 +1,19 @@
-import axios from "axios";
+import api from "../api";
 import { AccountResponse } from "models/account/AccountResponse";
 import { AddAccountCommand } from "models/account/AddAccountCommand";
 import { UpdateAccountCommand } from "models/account/UpdateAccountCommand";
 import { ResponseBase } from "models/shared/ResponseBase";
 
-const API = process.env.REACT_APP_API_BASE_URL;
+
 
 export const GetAccountsByUser = async (userId: number): Promise<AccountResponse[]> => {
-    const response = await axios.get<AccountResponse[]>(`${API}/api/Account/GetAccountsByUser?userId=${userId}`);
+    const response = await api.get<AccountResponse[]>(`/api/Account/GetAccountsByUser?userId=${userId}`);
     return response.data;
 }
 
 export const AddAccount = async (account: AddAccountCommand) => {
     const body = JSON.stringify(account);
-    const response = await axios.post(`${API}/api/Account/AddAccount`, body, {
+    const response = await api.post(`/api/Account/AddAccount`, body, {
         headers: {
             'Content-Type': 'application/json'
         }
@@ -23,7 +23,7 @@ export const AddAccount = async (account: AddAccountCommand) => {
 
 export const UpdateAccount = async (account: UpdateAccountCommand) => {
     const body = JSON.stringify(account);
-    const response = await axios.put(`${API}/api/Account/UpdateAccount`, body, {
+    const response = await api.put(`/api/Account/UpdateAccount`, body, {
         headers: {
             'Content-Type': 'application/json'
         }
@@ -32,6 +32,6 @@ export const UpdateAccount = async (account: UpdateAccountCommand) => {
 }
 
 export const DeleteAccount = async (accountId: number): Promise<ResponseBase> => {
-    const response = await axios.delete(`${API}/api/Account/DeleteAccount?accountId=${accountId}`);
+    const response = await api.delete(`/api/Account/DeleteAccount?accountId=${accountId}`);
     return response.data;
 }

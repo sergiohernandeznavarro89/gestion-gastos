@@ -1,19 +1,19 @@
-import axios from "axios";
+import api from "../api";
 import { AddSubCategoryCommand } from "models/subCategory/AddSubCategoryCommand";
 import { SubCategoryResponse } from "models/subCategory/SubCategoryResponse";
 import { UpdateSubCategoryCommand } from "models/subCategory/UpdateSubCategoryCommand";
 import { ResponseBase } from "models/shared/ResponseBase";
 
-const API = process.env.REACT_APP_API_BASE_URL;
+
 
 export const GetSubCategoriesByUser = async (userId: number): Promise<SubCategoryResponse[]> => {
-    const response = await axios.get<SubCategoryResponse[]>(`${API}/api/SubCategory/GetSubCategoriesByUser?userId=${userId}`);
+    const response = await api.get<SubCategoryResponse[]>(`/api/SubCategory/GetSubCategoriesByUser?userId=${userId}`);
     return response.data;
 }
 
 export const AddSubCategory = async (subCategory: AddSubCategoryCommand) => {
     const body = JSON.stringify(subCategory);
-    const response = await axios.post(`${API}/api/SubCategory/AddSubCategory`, body, {
+    const response = await api.post(`/api/SubCategory/AddSubCategory`, body, {
         headers: {
             'Content-Type': 'application/json'
         }
@@ -23,7 +23,7 @@ export const AddSubCategory = async (subCategory: AddSubCategoryCommand) => {
 
 export const UpdateSubCategory = async (subCategory: UpdateSubCategoryCommand) => {
     const body = JSON.stringify(subCategory);
-    const response = await axios.put(`${API}/api/SubCategory/UpdateSubCategory`, body, {
+    const response = await api.put(`/api/SubCategory/UpdateSubCategory`, body, {
         headers: {
             'Content-Type': 'application/json'
         }
@@ -32,6 +32,6 @@ export const UpdateSubCategory = async (subCategory: UpdateSubCategoryCommand) =
 }
 
 export const DeleteSubCategory = async (subCategoryId: number): Promise<ResponseBase> => {
-    const response = await axios.delete(`${API}/api/SubCategory/DeleteSubCategory?subCategoryId=${subCategoryId}`);
+    const response = await api.delete(`/api/SubCategory/DeleteSubCategory?subCategoryId=${subCategoryId}`);
     return response.data;
 }
