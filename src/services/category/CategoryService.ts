@@ -1,19 +1,19 @@
-import axios from "axios";
+import api from "../api";
 import { AddCategoryCommand } from "models/category/AddCategoryCommand";
 import { CategoryResponse } from "models/category/CategoryResponse";
 import { UpdateCategoryCommand } from "models/category/UpdateCategoryCommand";
 import { ResponseBase } from "models/shared/ResponseBase";
 
-const API = process.env.REACT_APP_API_BASE_URL;
+
 
 export const GetCategoriesByUser = async (userId: number): Promise<CategoryResponse[]> => {
-    const response = await axios.get<CategoryResponse[]>(`${API}/api/Category/GetCategoriesByUser?userId=${userId}`);
+    const response = await api.get<CategoryResponse[]>(`/api/Category/GetCategoriesByUser?userId=${userId}`);
     return response.data;
 }
 
 export const AddCategory = async (category: AddCategoryCommand) => {
     const body = JSON.stringify(category);
-    const response = await axios.post(`${API}/api/Category/AddCategory`, body, {
+    const response = await api.post(`/api/Category/AddCategory`, body, {
         headers: {
             'Content-Type': 'application/json'
         }
@@ -23,7 +23,7 @@ export const AddCategory = async (category: AddCategoryCommand) => {
 
 export const UpdateCategory = async (category: UpdateCategoryCommand) => {
     const body = JSON.stringify(category);
-    const response = await axios.put(`${API}/api/Category/UpdateCategory`, body, {
+    const response = await api.put(`/api/Category/UpdateCategory`, body, {
         headers: {
             'Content-Type': 'application/json'
         }
@@ -32,6 +32,6 @@ export const UpdateCategory = async (category: UpdateCategoryCommand) => {
 }
 
 export const DeleteCategory = async (categoryId: number): Promise<ResponseBase> => {
-    const response = await axios.delete(`${API}/api/Category/DeleteCategory?categoryId=${categoryId}`);
+    const response = await api.delete(`/api/Category/DeleteCategory?categoryId=${categoryId}`);
     return response.data;
 }
